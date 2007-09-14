@@ -1,0 +1,145 @@
+NAME
+    Sort::DataTypes - Sort a list of data using methods relevant to the type
+    of data
+
+SYNOPSIS
+       use Sort::DataTypes qw(:all);
+
+DESCRIPTION
+    This allows you to sort a list of data elements using methods that are
+    relevant to the type of data it is.
+
+ROUTINES
+    sort_numerical, sort_rev_numerical, sort_alphabetic, sort_rev_alphabetic
+          use Sort::DataTypes qw(:sort)
+
+          sort_numerical(\@list);
+          sort_rev_numerical(\@list);
+
+        These sorts a list numerically or alphabetically (normal or
+        reverse). There's little reason to use these... but are included for
+        the sake of completeness.
+
+          sort_numerical(\@list,%hash);
+          sort_rev_numerical(\@list,%hash);
+
+        These sort a list based on a hash. Every element in @list has a key
+        in %hash, and the values of those keys determine the order of the
+        list elements. They are sorted alphabetically or numerically.
+
+    sort_length, sort_rev_length
+          use Sort::DataTypes qw(:sort)
+
+          sort_length(\@list);
+          sort_rev_length(\@list);
+
+          sort_length(\@list,%hash);
+          sort_rev_length(\@list,%hash);
+
+        These sorts a list of strings by length.
+
+    sort_ip, sort_rev_ip
+          use Sort::DataTypes qw(:sort)
+
+          sort_ip(\@list);
+          sort_rev_ip(\@list);
+
+          sort_ip(\@list,%hash);
+          sort_rev_ip(\@list,%hash);
+
+        These sorts a list A.B.C.D IP numbers.
+
+    sort_domain, sort_rev_domain
+          use Sort::DataTypes qw(:sort)
+
+          sort_domain(\@list);
+          sort_rev_domain(\@list);
+
+          sort_domain(\@list,%hash);
+          sort_rev_domain(\@list,%hash);
+
+        These sorts a list A.B.C.D... domain names. It is done starting with
+        the last element in the domain, so foo.com comes before bar.edu.
+
+    sort_path, sort_rev_path
+          use Sort::DataTypes qw(:sort)
+
+          sort_path(\@list,$sep);
+          sort_rev_path(\@list,$sep);
+
+          sort_path(\@list,$sep,%hash);
+          sort_rev_path(\@list,$sep,%hash);
+
+        These sort anything in a path-type structure. This could include
+        file paths, classes, etc.
+
+        A "path" in of the form "A.B.C..." where any separator string can be
+        used to separate elements in the path. If $sep is passed in, it is
+        the separator to use. If not passed in, it defaults to "/".
+
+    sort_random, sort_rev_random
+          use Sort::DataTypes qw(:sort)
+
+          sort_random(\@list);
+          sort_rev_random(\@list);
+
+          sort_random(\@list,%hash);
+          sort_rev_random(\@list,%hash);
+
+        This uses the Fisher-Yates algorithm to randomly shuffle an array in
+        place. This routine was taken from the book
+
+          The Perl Cookbook
+          Tom Christiansen and Nathan Torkington
+
+        The sort_rev_random is identical, and is included simply for the
+        situation where the sort routines are being called in some
+        automatically generated code that may add the 'rev_' prefix.
+
+    sort_version, sort_rev_version
+          use Sort::DataTypes qw(:sort)
+
+          sort_version(\@list);
+          sort_rev_version(\@list);
+
+          sort_version(\@list,%hash);
+          sort_rev_version(\@list,%hash);
+
+        These sorts a list of version numbers of the form
+        MAJOR.MINOR.SUBMINOR ... (any number of levels are allowed). The
+        following examples should illustrate the ordering:
+
+          1.1.x < 1.2 < 1.2.x  Numerical versions are compared first at
+                               the highest level, then at the next highest,
+                               etc. The first non-equal compare sets the
+                               order.
+          1.a < 1.b            Alphanumeric levels that start with a letter
+                               are compared alphabetically.
+          1.2a < 1.2 < 1.03a   Alphanumeric levels that start with a number
+                               are first compared numerically with only the
+                               numeric part. If they are equal, alphanumeric
+                               levels come before purely numerical levels.
+                               Otherwise, they are compared alphabetically.
+          1.a < 1.2a           An alphanumeric level that starts with a letter
+                               comes before one that starts with a number.
+          1.01a < 1.1a         Two alphanumeric levels that are numerically
+                               equal in the number part and equal in the
+                               remaining part are compared alphabetically.
+
+    sort_date, sort_rev_date
+          use Sort::DataTypes qw(:sort)
+
+          sort_date(\@list);
+          sort_rev_date(\@list);
+
+          sort_date(\@list,%hash);
+          sort_rev_date(\@list,%hash);
+
+        These sorts a list of dates.
+
+KNOWN PROBLEMS
+    None at this point.
+
+AUTHOR
+    Sullivan Beck (sbeck@cpan.org)
+
