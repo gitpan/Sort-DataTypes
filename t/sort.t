@@ -16,7 +16,17 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
+$tests = '
+alphabetic
+foo
+bar
+zed
+   ~
+   bar
+   foo
+   zed
+
+rev_date
 Jul 4 2000
 May 31 2000
 Dec 31 1999
@@ -27,19 +37,48 @@ Jan 3 2001
   May 31 2000
   Dec 31 1999
 
-";
+domain
+aaa.bbb
+aa.bbb
+--
+\.
+~
+  aa.bbb
+  aaa.bbb
+
+rev_domain
+aaa::bbb::ccc
+bbb::ccc
+aaa::ccc
+--
+::
+~
+  aaa::bbb::ccc
+  bbb::ccc
+  aaa::ccc
+
+';
 
 sub test {
-  (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_rev_date(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  ($method,@test) = @_;
+  my(@list,@args) = ();
+  my($args)       = 0;
+
+  foreach my $ele (@test) {
+     if ($args) {
+        push(@args,$ele);
+     } elsif ($ele eq "--") {
+        $args = 1;
+     } else {
+        push(@list,$ele);
+     }
+  }
+
+  sort_by_method($method,\@list,@args);
+  return @list;
 }
 
-print "Date (hash,reverse)...\n";
+print "Sort...\n";
 test_Func(\&test,$tests,$runtests);
 
 1;

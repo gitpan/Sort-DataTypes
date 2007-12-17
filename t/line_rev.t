@@ -16,22 +16,38 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-foo bar zed ~ bar foo zed
+$tests = '
+a:3:b:c
+e:2:a:f
+c:1:x:d
+1
+:
+   ~
+   e:2:a:f
+   c:1:x:d
+   a:3:b:c
 
-";
+a:3:b:c
+e:2:a:f
+c:1:x:d
+3
+:
+   ~
+   c:1:x:d
+   a:3:b:c
+   e:2:a:f
+
+';
 
 sub test {
-  (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_alphabetic(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
+  (@test)= @_;
+  $sep   = pop(@test);
+  $n     = pop(@test);
+  sort_rev_line(\@test,$n,$sep);
   return @test;
 }
 
-print "Alphabetic (hash)...\n";
+print "Line (reverse)...\n";
 test_Func(\&test,$tests,$runtests);
 
 1;

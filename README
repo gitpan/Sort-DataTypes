@@ -10,8 +10,33 @@ DESCRIPTION
     relevant to the type of data it is.
 
 ROUTINES
+    sort_valid_method
+          use Sort::DataTypes qw(:all)
+
+          $flag = sort_valid_method($string);
+
+        This returns 1 if there is a valid sort method named $string in the
+        module. For example:
+
+          sort_valid_method("numerical")
+             => 1
+
+          sort_valid_method("foobar")
+             => 0
+
+    sort_by_method
+          use Sort::DataTypes qw(:all)
+
+          sort_by_method($method,\@list [,@args]);
+
+        This sorts a list using the given method (which is any string which
+        returns 1 when passed to sort_valid_method. @args are arguments to
+        pass to the sort.
+
+        If the method is not valid, the list is left untouched.
+
     sort_numerical, sort_rev_numerical, sort_alphabetic, sort_rev_alphabetic
-          use Sort::DataTypes qw(:sort)
+          use Sort::DataTypes qw(:all)
 
           sort_numerical(\@list);
           sort_rev_numerical(\@list);
@@ -28,7 +53,7 @@ ROUTINES
         list elements. They are sorted alphabetically or numerically.
 
     sort_length, sort_rev_length
-          use Sort::DataTypes qw(:sort)
+          use Sort::DataTypes qw(:all)
 
           sort_length(\@list);
           sort_rev_length(\@list);
@@ -39,7 +64,7 @@ ROUTINES
         These sorts a list of strings by length.
 
     sort_ip, sort_rev_ip
-          use Sort::DataTypes qw(:sort)
+          use Sort::DataTypes qw(:all)
 
           sort_ip(\@list);
           sort_rev_ip(\@list);
@@ -49,36 +74,80 @@ ROUTINES
 
         These sorts a list A.B.C.D IP numbers.
 
-    sort_domain, sort_rev_domain
-          use Sort::DataTypes qw(:sort)
+    sort_domain, sort_rev_domain, sort_numdomain, sort_rev_numdomain
+          use Sort::DataTypes qw(:all)
 
-          sort_domain(\@list);
-          sort_rev_domain(\@list);
+          sort_domain(\@list [,$sep]);
+          sort_rev_domain(\@list [,$sep]);
 
-          sort_domain(\@list,%hash);
-          sort_rev_domain(\@list,%hash);
+          sort_domain(\@list [,$sep] ,%hash);
+          sort_rev_domain(\@list [,$sep] ,%hash);
 
-        These sorts a list A.B.C.D... domain names. It is done starting with
-        the last element in the domain, so foo.com comes before bar.edu.
+        This sorts domain names (A.B.C...) or anything else consisting of a
+        class, subclass, subsubclass, etc., with the most significant class
+        at the right.
 
-    sort_path, sort_rev_path
-          use Sort::DataTypes qw(:sort)
+        Elements in the domain are separated from each other by a period (.)
+        unless $sep is passed in. If $sep is passed in, it is a regular
+        expression to split the elements in a domain.
 
-          sort_path(\@list,$sep);
-          sort_rev_path(\@list,$sep);
+        Since the most significan element in the domain is at the right, any
+        domain ending with ".com" would come before any domain ending in
+        ".edu".
 
-          sort_path(\@list,$sep,%hash);
-          sort_rev_path(\@list,$sep,%hash);
+          a.b < z.b < a.bb < z.bb < a.c
 
-        These sort anything in a path-type structure. This could include
-        file paths, classes, etc.
+        A related type of sorting is:
 
-        A "path" in of the form "A.B.C..." where any separator string can be
-        used to separate elements in the path. If $sep is passed in, it is
-        the separator to use. If not passed in, it defaults to "/".
+          sort_numdomain(\@list [,$sep]);
+          sort_rev_numdomain(\@list [,$sep]);
+
+          sort_numdomain(\@list [,$sep] ,%hash);
+          sort_rev_numdomain(\@list [,$sep] ,%hash);
+
+        numdomain sorting is identical to domain sorting except that if two
+        elements in the domain are integers, numerical sorts will be done.
+        So:
+
+          a.11.c < a.2.c
+
+    sort_path, sort_rev_path, sort_numpath, sort_rev_numpath
+          use Sort::DataTypes qw(:all)
+
+          sort_path(\@list [,$sep]);
+          sort_rev_path(\@list [,$sep]);
+
+          sort_path(\@list [,$sep] ,%hash);
+          sort_rev_path(\@list [,$sep] ,%hash);
+
+        This sorts paths (/A/B/C...) or anything else consisting of a class,
+        subclass, subsubclass, etc., with the most significant class at the
+        left.
+
+        Elements in a path are separated from each other by a slash (/)
+        unless $sep is passed in. If $sep is passed in, it is a regular
+        expression to split the elements in a path.
+
+        Since the most significan element in the domain is at the left, you
+        get the following behavior:
+
+          a/b < a/z < aa/b < aa/z < b/b
+
+        A related type of sorting is:
+
+          sort_numpath(\@list [,$sep]);
+          sort_rev_numpath(\@list [,$sep]);
+
+          sort_numpath(\@list [,$sep] ,%hash);
+          sort_rev_numpath(\@list [,$sep] ,%hash);
+
+        numpath sorting is identical to path sorting except that if two
+        elements in the path are integers, numerical sorts will be done. So:
+
+          a/2/c < a/11/c
 
     sort_random, sort_rev_random
-          use Sort::DataTypes qw(:sort)
+          use Sort::DataTypes qw(:all)
 
           sort_random(\@list);
           sort_rev_random(\@list);
@@ -97,7 +166,7 @@ ROUTINES
         automatically generated code that may add the 'rev_' prefix.
 
     sort_version, sort_rev_version
-          use Sort::DataTypes qw(:sort)
+          use Sort::DataTypes qw(:all)
 
           sort_version(\@list);
           sort_rev_version(\@list);
@@ -127,7 +196,7 @@ ROUTINES
                                remaining part are compared alphabetically.
 
     sort_date, sort_rev_date
-          use Sort::DataTypes qw(:sort)
+          use Sort::DataTypes qw(:all)
 
           sort_date(\@list);
           sort_rev_date(\@list);
@@ -135,7 +204,30 @@ ROUTINES
           sort_date(\@list,%hash);
           sort_rev_date(\@list,%hash);
 
-        These sorts a list of dates.
+        These sorts a list of dates. Dates are anything that can be parsed
+        with Date::Manip.
+
+    sort_line, sort_rev_line, sort_numline, sort_rev_numline
+          use Sort::DataTypes qw(:all)
+
+          sort_line(\@list,$n [,$sep]);
+          sort_rev_line(\@list,$n [,$sep]);
+
+          sort_line(\@list,$n [,$sep] ,%hash);
+          sort_rev_line(\@list,$n [,$sep] ,%hash);
+
+        These take a list of lines and sort on the Nth field using $sep as
+        the regular expression splitting the lines into fields. If no $sep
+        is given, it defaults to white space.
+
+          sort_numline(\@list,$n [,$sep]);
+          sort_rev_numline(\@list,$n [,$sep]);
+
+          sort_numline(\@list,$n [,$sep] ,%hash);
+          sort_rev_numline(\@list,$n [,$sep] ,%hash);
+
+        These are similar but will sort numerically if the Nth field is an
+        integer, and alphabetically otherwise.
 
 KNOWN PROBLEMS
     None at this point.

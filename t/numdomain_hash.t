@@ -16,22 +16,39 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-foo bar zed ~ bar foo zed
+$tests = '
+a.11.c
+a.2.c
+SEP
+~
+  a.2.c
+  a.11.c
 
-";
+';
 
 sub test {
   (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_alphabetic(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
+  if ($test[$#test] eq "SEP") {
+    pop(@test);
+    $i=1;
+    %hash=map { $i++ => $_ } @test;
+    @tmp=(1..$i-1);
+    sort_numdomain(\@tmp,%hash);
+    @test=map { $hash{$_} } @tmp;
+    return @test;
+  } else {
+    $sep = pop(@test);
+    $i=1;
+    %hash=map { $i++ => $_ } @test;
+    @tmp=(1..$i-1);
+    sort_numdomain(\@tmp,$sep,%hash);
+    @test=map { $hash{$_} } @tmp;
+    return @test;
+  }
   return @test;
 }
 
-print "Alphabetic (hash)...\n";
+print "NumDomain (hash)...\n";
 test_Func(\&test,$tests,$runtests);
 
 1;

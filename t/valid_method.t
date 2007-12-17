@@ -16,22 +16,18 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-foo bar zed ~ bar foo zed
+$tests = '
+numerical ~ 1
 
-";
+foobar ~ 0
+';
 
 sub test {
   (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_alphabetic(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  return sort_valid_method(@test);
 }
 
-print "Alphabetic (hash)...\n";
+print "ValidMethod...\n";
 test_Func(\&test,$tests,$runtests);
 
 1;
