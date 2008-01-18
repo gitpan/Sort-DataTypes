@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# Copyright (c) 1996-2007 Sullivan Beck. All rights reserved.
+# Copyright (c) 1996-2008 Sullivan Beck. All rights reserved.
 # This program is free software; you can redistribute it and/or modify it
 # under the same terms as Perl itself.
 
@@ -17,6 +17,8 @@
 # 2001-08-23  Added support for undef args.
 #
 # 2007-08-14  Better support for undef/blank args.
+#
+# 2008-01-02  Better handling of $runtests.
 
 ###############################################################################
 
@@ -88,16 +90,46 @@
 #
 # @extra are extra arguments which are added to the function call.
 #
-# The tests can be run in an interactive way (using the "runtests" command)
-# or in a non-interactive way (as part of a "make test").  If $runtests is
-# 0, the non-interactive way is done.  If $runtests a negative number -N,
-# only the Nth test is run.  If $runtests is a positive number +N, all tests
-# starting with the Nth test are run.
+# There are several ways to run the tests, depending on the value of
+# $runtests.
+#
+# If $runtests is 0, the tests are run in a non-interactive way suitable
+# for running as part of a "make test".
+#
+# If $runtests is a positive number, it runs runs all tests starting at
+# that value in a way suitable for running interactively.
+# 
+# If $runtests is a negative number, it runs all tests starting at that
+# value, but providing feedback at each test.
+#
+# If $runtests is a string "=N" (where N is a number), it runs only
+# that test.
 
 sub test_Func {
    my($funcref,$tests,$runtests,@extra)=@_;
    my(@tests);
-   $runtests=0  if (! $runtests);
+
+   $runtests     = 0  if (! $runtests);
+   my($starttest,$feedback,$endtest);
+   if      ($runtests eq "0"  or  $runtests eq "-0") {
+      $starttest = 1;
+      $feedback  = 1;
+      $endtest   = 0;
+   } elsif ($runtests =~ /^\d+$/){
+      $starttest = $runtests;
+      $feedback  = 0;
+      $endtest   = 0;
+   } elsif ($runtests =~ /^-(\d+)$/) {
+      $starttest = $1;
+      $feedback  = 1;
+      $endtest   = 0;
+   } elsif ($runtests =~ /^=(\d+)$/) {
+      $starttest = $1;
+      $feedback  = 1;
+      $endtest   = $1;
+   } else {
+      die "ERROR: unknown argument(s): $runtests";
+   }
 
    if (ref($tests) eq "ARRAY") {
       @tests = @$tests;
@@ -158,15 +190,13 @@ sub test_Func {
    }
 
    my($ntest)=$#tests + 1;
-   print "1..$ntest\n"  if (! $runtests);
+   print "1..$ntest\n"  if ($feedback);
 
    my(@t);
-   if ($runtests > 0) {
-      @t = ($runtests..$ntest);
-   } elsif ($runtests < 0) {
-      @t = (-$runtests);
+   if ($endtest) {
+      @t = ($starttest..$endtest);
    } else {
-      @t = (1..$ntest);
+      @t = ($starttest..$ntest);
    }
 
    foreach my $t (@t) {
@@ -241,7 +271,7 @@ sub test_Func {
          warn "Got      = $ans\n";
          warn "########################\n";
       } else {
-         print "ok $t\n"  if (! $runtests);
+         print "ok $t\n"  if ($feedback);
       }
    }
 }

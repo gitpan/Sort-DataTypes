@@ -17,18 +17,16 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = "
-foo bar zed ~ bar foo zed
+1 a 2 c 3 b ~ 1 3 2
 
 ";
 
 sub test {
   (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_alphabetic(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  %hash=@test;
+  @list=keys %hash;
+  sort_alphabetic(\@list,\%hash);
+  return @list;
 }
 
 print "Alphabetic (hash)...\n";

@@ -39,6 +39,28 @@ a/b/c
    aa/a
    c/d/e
 
+/aa/a
+/a/b
+/c/d/e
+/a/b/c
+\/
+   ~
+   /a/b
+   /a/b/c
+   /aa/a
+   /c/d/e
+
+aa/a
+/a/b
+/c/d/e
+a/b/c
+\/
+   ~
+   /a/b
+   /c/d/e
+   a/b/c
+   aa/a
+
 ';
 
 sub test {

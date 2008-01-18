@@ -17,32 +17,25 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = '
-aa.a a.b c.d.e a.b.c SEP ~ c.d.e aa.a a.b.c a.b
+1 aa.a 2 a.b 3 c.d.e 4 a.b.c ~ 3 1 4 2
 
-aa/a a/b c/d/e a/b/c / ~ c/d/e aa/a a/b/c a/b
+/ 1 aa/a 2 a/b 3 c/d/e 4 a/b/c ~ 3 1 4 2
 
 ';
 
 sub test {
   (@test)=@_;
-  if ($test[$#test] eq "SEP") {
-    pop(@test);
-    $i=1;
-    %hash=map { $i++ => $_ } @test;
-    @tmp=(1..$i-1);
-    sort_rev_path(\@tmp,%hash);
-    @test=map { $hash{$_} } @tmp;
-    return @test;
+  my $n    = $#test + 1;
+  my $sep  = (2*int($n/2) == $n ? "" : shift(@test));
+  my %hash = @test;
+  my @list = keys %hash;
+
+  if ($sep) {
+    sort_rev_path(\@list,$sep,\%hash);
   } else {
-    $sep = pop(@test);
-    $i=1;
-    %hash=map { $i++ => $_ } @test;
-    @tmp=(1..$i-1);
-    sort_rev_path(\@tmp,$sep,%hash);
-    @test=map { $hash{$_} } @tmp;
-    return @test;
+    sort_rev_path(\@list,\%hash);
   }
-  return @test;
+  return @list;
 }
 
 print "Path (hash,reverse)...\n";

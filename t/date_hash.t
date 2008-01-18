@@ -17,26 +17,28 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = "
+a
 Jul 4 2000
+b
 May 31 2000
+c
 Dec 31 1999
+d
 Jan 3 2001
 ~
-  Dec 31 1999
-  May 31 2000
-  Jul 4 2000
-  Jan 3 2001
+  c
+  b
+  a
+  d
 
 ";
 
 sub test {
   (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_date(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  %hash=@test;
+  @list=keys %hash;
+  sort_date(\@list,\%hash);
+  return @list;
 }
 
 print "Date (hash)...\n";

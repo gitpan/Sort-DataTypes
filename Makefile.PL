@@ -8,7 +8,6 @@ WriteMakefile(
        : ()),
    'dist' => {COMPRESS=>'gzip',SUFFIX=>'gz'},
    PREREQ_PM => {
-                 Carp                    => 0,
                  Date::Manip             => 0,
                 },
 );

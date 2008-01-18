@@ -33,7 +33,7 @@ sub test {
     $i=1;
     %hash=map { $i++ => $_ } @test;
     @tmp=(1..$i-1);
-    sort_rev_numdomain(\@tmp,%hash);
+    sort_rev_numdomain(\@tmp,\%hash);
     @test=map { $hash{$_} } @tmp;
     return @test;
   } else {
@@ -41,7 +41,7 @@ sub test {
     $i=1;
     %hash=map { $i++ => $_ } @test;
     @tmp=(1..$i-1);
-    sort_rev_numdomain(\@tmp,$sep,%hash);
+    sort_rev_numdomain(\@tmp,$sep,\%hash);
     @test=map { $hash{$_} } @tmp;
     return @test;
   }

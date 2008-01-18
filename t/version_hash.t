@@ -17,26 +17,24 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = "
-1.1.x 1.2 1.2.x ~ 1.1.x 1.2 1.2.x
+a 1.1.x b 1.2 c 1.2.x ~ a b c
 
-1.aaa 1.bbb ~ 1.aaa 1.bbb
+a 1.aaa b 1.bbb ~ a b
 
-1.2a 1.2 1.03 ~ 1.2a 1.2 1.03
+a 1.2a b 1.2 c 1.03 ~ a b c
 
-1.a 1.2a ~ 1.a 1.2a
+a 1.a b 1.2a ~ a b
 
-1.01a 1.1a ~ 1.01a 1.1a
+a 1.01a b 1.1a ~ a b
 
 ";
 
 sub test {
   (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_version(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  %hash=@test;
+  @list=keys %hash;
+  sort_version(\@list,\%hash);
+  return @list;
 }
 
 print "Version (hash)...\n";

@@ -50,6 +50,7 @@ t/numline_hash.t
 t/line_rev_hash.t
 t/valid_method.t
 t/sort.t
+t/function.t
 README
 Makefile.PL
 MANIFEST

@@ -17,20 +17,18 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = "
-foo bar zed ~ bar foo zed
+1 foo 2 bar 3 zed ~ 2 1 3
 
-foo a mi m mo zed ~ a m mi mo foo zed
+1 foo 2 a 3 mi 4 m 5 mo 6 zed ~ 2 4 3 5 1 6
 
 ";
 
 sub test {
   (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_length(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  %hash=@test;
+  @list=keys %hash;
+  sort_length(\@list,\%hash);
+  return @list;
 }
 
 print "Length (hash)...\n";

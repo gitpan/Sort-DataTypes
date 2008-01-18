@@ -47,7 +47,7 @@ sub test {
   $i=1;
   %hash=map { $i++ => $_ } @test;
   @tmp=(1..$i-1);
-  sort_line(\@tmp,$n,$sep,%hash);
+  sort_line(\@tmp,$n,$sep,\%hash);
   @test=map { $hash{$_} } @tmp;
   return @test;
 }

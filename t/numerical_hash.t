@@ -17,20 +17,16 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = "
-1 3 2 ~ 1 2 3
-
--2 -3 -1 ~ -3 -2 -1
+a 3 b 5 c 1 ~ c a b
 
 ";
 
 sub test {
   (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_numerical(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  %hash=@test;
+  @list=keys %hash;
+  sort_numerical(\@list,\%hash);
+  return @list;
 }
 
 print "Numerical (hash)...\n";

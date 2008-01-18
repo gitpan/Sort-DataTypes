@@ -16,43 +16,38 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = '
-a:3:b:c
-e:2:a:f
-c:1:x:d
-1
-:
-   ~
-   e:2:a:f
-   c:1:x:d
-   a:3:b:c
+$tests = "
+abc
+bcd
+mno
+nop
+~
+  mno
+  nop
+  abc
+  bcd
 
-a:3:b:c
-e:2:a:f
-c:1:x:d
-3
-:
-   ~
-   c:1:x:d
-   a:3:b:c
-   e:2:a:f
+";
 
-';
+# Do an alphabetic sort except put m-z before a-l)
+sub testcmp {
+  my($x,$y) = @_;
+  if ($x lt "m"  &&  $y ge "m") {
+     return 1
+  } elsif ($x ge "m"  &&  $y lt "m") {
+     return -1;
+  } else {
+     return $x cmp $y;
+  }
+}
 
 sub test {
   (@test)=@_;
-  $sep   = pop(@test);
-  $n     = pop(@test);
-
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_rev_line(\@tmp,$n,$sep,\%hash);
-  @test=map { $hash{$_} } @tmp;
+  sort_function(\@test,\&testcmp);
   return @test;
 }
 
-print "Line (hash,reverse)...\n";
+print "Function...\n";
 test_Func(\&test,$tests,$runtests);
 
 1;

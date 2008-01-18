@@ -21,6 +21,8 @@ foo bar zed ~ zed foo bar
 
 foo a mi m mo zed ~ zed foo mo mi m a
 
+aaa ccc bbb ~ ccc bbb aaa
+
 ";
 
 sub test {

@@ -1,5 +1,5 @@
 package Sort::DataTypes;
-# Copyright (c) 2007-2007 Sullivan Beck. All rights reserved.
+# Copyright (c) 2007-2008 Sullivan Beck. All rights reserved.
 # This program is free software; you can redistribute it and/or modify it
 # under the same terms as Perl itself.
 
@@ -10,53 +10,72 @@ package Sort::DataTypes;
 # Version 1.00  2007-09-05
 #    Initial release
 #
-# Version 1.01  2007-09-19
+# Version 1.01  2007-12-17
 #    Added separator to domain sorting.
 #    Added numdomain and numpath sorting.
 #    Added line and numline sorting.
 #    Added sort_valid_method and sort_by_method routines.
+#
+# Version 2.00  2008-01-18
+#    Fixed a bug where path sorting didn't have "/" as the default separator.
+#    Added sort_function routines.
+#    Updated test.pl.
+#    Added all the cmp_* routines.
+#    Changed %hash to be passed in by reference.
+#    Simplified all routines and tests.
 
-$VERSION = "1.01";
+$VERSION = "2.00";
 ###############################################################################
 
 require 5.000;
 require Exporter;
-use Carp;
 use Date::Manip;
 Date_Init();
 
 @ISA = qw(Exporter);
-@EXPORT_OK = qw(sort_valid_method
-                sort_by_method
-                sort_numerical  sort_rev_numerical
-                sort_alphabetic sort_rev_alphabetic
-                sort_ip         sort_rev_ip
-                sort_domain     sort_rev_domain
-                sort_numdomain  sort_rev_numdomain
-                sort_random     sort_rev_random
-                sort_version    sort_rev_version
-                sort_date       sort_rev_date
-                sort_length     sort_rev_length
-                sort_path       sort_rev_path
-                sort_numpath    sort_rev_numpath
-                sort_line       sort_rev_line
-                sort_numline    sort_rev_numline
-               );
+@EXPORT_OK =
+  qw(sort_valid_method
+     sort_by_method
+     sort_numerical  sort_rev_numerical
+     sort_alphabetic sort_rev_alphabetic
+     sort_ip         sort_rev_ip
+     sort_domain     sort_rev_domain      sort_numdomain  sort_rev_numdomain
+     sort_random     sort_rev_random
+     sort_version    sort_rev_version
+     sort_date       sort_rev_date
+     sort_length     sort_rev_length
+     sort_path       sort_rev_path        sort_numpath    sort_rev_numpath
+     sort_line       sort_rev_line        sort_numline    sort_rev_numline
+     sort_function   sort_rev_function
+     cmp_valid_method
+     cmp_by_method
+     cmp_numerical   cmp_rev_numerical
+     cmp_alphabetic  cmp_rev_alphabetic
+     cmp_ip          cmp_rev_ip
+     cmp_domain      cmp_rev_domain       cmp_numdomain   cmp_rev_numdomain
+     cmp_random      cmp_rev_random
+     cmp_version     cmp_rev_version
+     cmp_date        cmp_rev_date
+     cmp_length      cmp_rev_length
+     cmp_path        cmp_rev_path         cmp_numpath     cmp_rev_numpath
+     cmp_line        cmp_rev_line         cmp_numline     cmp_rev_numline
+     cmp_function    cmp_rev_function
+   );
 %EXPORT_TAGS = (all => \@EXPORT_OK);
 
-@methods = qw(numerical  rev_numerical
-              alphabetic rev_alphabetic
-              ip         rev_ip
-              domain     rev_domain
-              numdomain  rev_numdomain
-              random     rev_random
-              version    rev_version
-              date       rev_date
-              length     rev_length
-              path       rev_path
-              numpath    rev_numpath
-              line       rev_line
-              numline    rev_numline);
+@methods =
+  qw(numerical       rev_numerical
+     alphabetic      rev_alphabetic
+     ip              rev_ip
+     domain          rev_domain           numdomain  rev_numdomain
+     random          rev_random
+     version         rev_version
+     date            rev_date
+     length          rev_length
+     path            rev_path             numpath    rev_numpath
+     line            rev_line             numline    rev_numline
+     function        rev_function
+   );
 use vars qw(%methods);
 %methods = map { $_,1 } @methods;
 
@@ -76,9 +95,54 @@ Sort::DataTypes - Sort a list of data using methods relevant to the type of data
 =head1 DESCRIPTION
 
 This allows you to sort a list of data elements using methods that are
-relevant to the type of data it is.
+relevant to the type of data it is. This modules does not attempt to
+be the fastest sorter on the block. If you are sorting thousands of
+elements and need a lot of speed, you should refer to a module
+specializing in the specific type of sort you will be doing. However,
+to do smaller sorts of different types of data, this is the module to
+use.
 
 =head1 ROUTINES
+
+All sort routines are named sort_METHOD where METHOD is the name of
+the method. All sort_METHOD have both a forward and reverse sort:
+
+  sort_METHOD(\@list,@args);
+  sort_rev_METHOD(\@list,@args);
+
+where @args are any additional arguments needed for that sort method.
+
+Corresponding to every sort_METHOD routine is a cmp_METHOD routine
+which takes two elements (and possibly additional arguments as
+required by the actual method) and returns a -1, 0, or 1 (similar to
+the cmp or <=> operators).
+
+  $flag = cmp_METHOD($x,$y,@args);
+  $flag = cmp_rev_METHOD($x,$y,@args);
+
+All sort_METHOD functions can also be used to sort a list using a
+hash:
+
+  sort_METHOD(\@list,[@args],\%hash);
+  sort_rev_METHOD(\@list,[@args],\%hash);
+
+In this case, elements of @list are used as keys in %hash. The values
+of the hash are compared using the cmp_METHOD function to sort the
+keys in @list.
+
+For example, if %hash contains the key/value pairs:
+
+  foo => 3
+  bar => 5
+  ick => 1
+
+and @list contains (foo,bar,ick), then sorting:
+
+  sort_numerical(\@list,%hash)
+    => @list = (ick,foo,bar)
+
+since "ick" corresponds to a numerical value of 1, "foo" to 3, and
+"bar" to 5.
 
 =over 4
 
@@ -88,20 +152,25 @@ relevant to the type of data it is.
 ###############################################################################
 =pod
 
-=item sort_valid_method
+=item sort_valid_method, cmp_valid_method
 
   use Sort::DataTypes qw(:all)
 
   $flag = sort_valid_method($string);
+  $flag = cmp_valid_method($string);
 
-This returns 1 if there is a valid sort method named $string in the
-module. For example:
+These are identical and return 1 if there is a valid sort method named
+$string in the module. For example, there is a function
+"sort_numerical" defined in this modules, but there is no function
+"sort_foobar", so the following would occur:
 
   sort_valid_method("numerical")
      => 1
 
   sort_valid_method("foobar")
      => 0
+
+Note that the methods must NOT include the "sort_" or "cmp_" prefix.
 
 =cut
 
@@ -110,15 +179,21 @@ sub sort_valid_method {
    return (exists $methods{$method} ? 1 : 0);
 }
 
-=item sort_by_method
+sub cmp_valid_method {
+   my($method) = @_;
+   return (exists $methods{$method} ? 1 : 0);
+}
+
+=item sort_by_method, cmp_by_method
 
   use Sort::DataTypes qw(:all)
 
   sort_by_method($method,\@list [,@args]);
+  cmp_by_method ($method,$ele1,$ele2 [,@args]);
 
-This sorts a list using the given method (which is any string which
-returns 1 when passed to sort_valid_method. @args are arguments to
-pass to the sort.
+These sort a list, or compare two elements, using the given method
+(which is any string which returns 1 when passed to
+sort_valid_method. @args are arguments to pass to the sort.
 
 If the method is not valid, the list is left untouched.
 
@@ -196,165 +271,301 @@ sub sort_by_method {
    }
 }
 
+sub cmp_by_method {
+   my($method,$list,@args) = @_;
+
+   return  if (! cmp_valid_method($method));
+
+   if      ($method eq "numerical") {
+      cmp_numerical($list,@args);
+   } elsif ($method eq "rev_numerical") {
+      cmp_rev_numerical($list,@args);
+
+   } elsif ($method eq "alphabetic") {
+      cmp_alphabetic($list,@args);
+   } elsif ($method eq "rev_alphabetic") {
+      cmp_rev_alphabetic($list,@args);
+
+   } elsif ($method eq "length") {
+      cmp_length($list,@args);
+   } elsif ($method eq "rev_length") {
+      cmp_rev_length($list,@args);
+
+   } elsif ($method eq "ip") {
+      cmp_ip($list,@args);
+   } elsif ($method eq "rev_ip") {
+      cmp_rev_ip($list,@args);
+
+   } elsif ($method eq "domain") {
+      cmp_domain($list,@args);
+   } elsif ($method eq "rev_domain") {
+      cmp_rev_domain($list,@args);
+
+   } elsif ($method eq "numdomain") {
+      cmp_numdomain($list,@args);
+   } elsif ($method eq "rev_numdomain") {
+      cmp_rev_numdomain($list,@args);
+
+   } elsif ($method eq "path") {
+      cmp_path($list,@args);
+   } elsif ($method eq "rev_path") {
+      cmp_rev_path($list,@args);
+
+   } elsif ($method eq "numpath") {
+      cmp_numpath($list,@args);
+   } elsif ($method eq "rev_numpath") {
+      cmp_rev_numpath($list,@args);
+
+   } elsif ($method eq "random") {
+      cmp_random($list,@args);
+   } elsif ($method eq "rev_random") {
+      cmp_rev_random($list,@args);
+
+   } elsif ($method eq "version") {
+      cmp_version($list,@args);
+   } elsif ($method eq "rev_version") {
+      cmp_rev_version($list,@args);
+
+   } elsif ($method eq "date") {
+      cmp_date($list,@args);
+   } elsif ($method eq "rev_date") {
+      cmp_rev_date($list,@args);
+
+   } elsif ($method eq "line") {
+      cmp_line($list,@args);
+   } elsif ($method eq "rev_line") {
+      cmp_rev_line($list,@args);
+
+   } elsif ($method eq "numline") {
+      cmp_numline($list,@args);
+   } elsif ($method eq "rev_numline") {
+      cmp_rev_numline($list,@args);
+   }
+}
+
 ###############################################################################
 =pod
 
-=item sort_numerical, sort_rev_numerical, sort_alphabetic, sort_rev_alphabetic
+=item sort_numerical, sort_rev_numerical, cmp_numerical, cmp_rev_numerical
 
   use Sort::DataTypes qw(:all)
 
   sort_numerical(\@list);
   sort_rev_numerical(\@list);
 
-These sorts a list numerically or alphabetically (normal or reverse). There's
-little reason to use these... but are included for the sake of completeness.
+  sort_numerical(\@list,\%hash);
+  sort_rev_numerical(\@list,\%hash);
 
-  sort_numerical(\@list,%hash);
-  sort_rev_numerical(\@list,%hash);
+  $flag = cmp_numerical($x,$y);
+  $flag = cmp_rev_numerical($x,$y);
 
-These sort a list based on a hash. Every element in @list has a key in %hash,
-and the values of those keys determine the order of the list elements. They
-are sorted alphabetically or numerically.
+These sorts a list numerically in forward or reverse order, or compare two
+elements numerically. There is little reason to use either of these
+routines (it would be more efficient to simply call sort as:
+
+  sort { $a <=> $b } @list
+
+but they are included for the sake of completeness (and for use by the
+sort_by_method/cmp_by_method routines). Also, if the code is being
+automatically generated, numerical sorts won't have to be a special
+case.
 
 =cut
 
 sub sort_numerical {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { $hash{$a} <=> $hash{$b}  ||  $hash{$a} cmp $hash{$b} } @$list;
+   my($list,$hash) = @_;
+   if (defined $hash) {
+      @$list = sort { cmp_numerical($$hash{$a},$$hash{$b}) ||
+                      $a cmp $b
+                    } @$list;
    } else {
-      @$list = sort { $a <=> $b  ||  $a cmp $b } @$list;
+      @$list = sort { cmp_numerical($a,$b) } @$list;
    }
+}
+
+sub cmp_numerical {
+   my($x,$y) = @_;
+   return ($x <=> $y);
 }
 
 sub sort_rev_numerical {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { $hash{$b} <=> $hash{$a}  ||  $hash{$b} cmp $hash{$a} } @$list;
-   } else {
-      @$list = sort { $b <=> $a  ||  $b cmp $a } @$list;
-   }
+   my($list,@args) = @_;
+   sort_numerical($list,@args);
+   @$list = reverse @$list;
 }
 
-sub sort_alphabetic {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { $hash{$a} cmp $hash{$b} } @$list;
-   } else {
-      @$list = sort { $a cmp $b } @$list;
-   }
-}
-
-sub sort_rev_alphabetic {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { $hash{$b} cmp $hash{$a} } @$list;
-   } else {
-      @$list = sort { $b cmp $a } @$list;
-   }
+sub cmp_rev_numerical {
+   my($x,$y) = @_;
+   return cmp_numerical($y,$x);
 }
 
 ###############################################################################
 =pod
 
-=item sort_length, sort_rev_length
+=item sort_alphabetic, sort_rev_alphabetic, cmp_alphabetic, cmp_rev_alphabetic
+
+  use Sort::DataTypes qw(:all)
+
+  sort_alphabetic(\@list);
+  sort_rev_alphabetic(\@list);
+
+  sort_alphabetic(\@list,\%hash);
+  sort_rev_alphabetic(\@list,\%hash);
+
+  $flag = cmp_alphabetic($x,$y);
+  $flag = cmp_rev_alphabetic($x,$y);
+
+These do alphabetic sorts. As with numerical sorts, there is little reason
+to call these, and they are included for the sake of completeness.
+
+=cut
+
+sub sort_alphabetic {
+   my($list,$hash) = @_;
+   if (defined $hash) {
+      @$list = sort { cmp_alphabetic($$hash{$a},$$hash{$b}) ||
+                      $a cmp $b
+                    } @$list;
+   } else {
+      @$list = sort { cmp_alphabetic($a,$b) } @$list;
+   }
+}
+
+sub cmp_alphabetic {
+   my($x,$y) = @_;
+   return ($x cmp $y);
+}
+
+sub sort_rev_alphabetic {
+   my($list,@args) = @_;
+   sort_alphabetic($list,@args);
+   @$list = reverse @$list;
+}
+
+sub cmp_rev_alphabetic {
+   my($x,$y) = @_;
+   return ($y <=> $x);
+}
+
+###############################################################################
+=pod
+
+=item sort_length, sort_rev_length, cmp_length, cmp_rev_length
 
   use Sort::DataTypes qw(:all)
 
   sort_length(\@list);
   sort_rev_length(\@list);
 
-  sort_length(\@list,%hash);
-  sort_rev_length(\@list,%hash);
+  sort_length(\@list,\%hash);
+  sort_rev_length(\@list,\%hash);
 
-These sorts a list of strings by length.
+  $flag = cmp_length($x,$y);
+  $flag = cmp_rev_length($x,$y);
+
+These take strings and compare them by length and alphabetically if they
+are the same length.
 
 =cut
 
 sub sort_length {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { length($hash{$a}) <=> length($hash{$b})  ||
-                      $hash{$a} cmp $hash{$b}
+   my($list,$hash) = @_;
+   if (defined $hash) {
+      @$list = sort { cmp_length($$hash{$a},$$hash{$b}) ||
+                      $a cmp $b
                     } @$list;
    } else {
-      @$list = sort { length($a) <=> length($b) ||  $a cmp $b } @$list;
+      @$list = sort { cmp_length($a,$b) } @$list;
    }
 }
 
+sub cmp_length {
+   my($x,$y) = @_;
+   return ( length($x) <=> length($y)  ||
+            $x cmp $y );
+}
+
 sub sort_rev_length {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { length($hash{$b}) <=> length($hash{$a})  ||
-                      $hash{$b} cmp $hash{$a}
-                    } @$list;
-   } else {
-      @$list = sort { length($b) <=> length($a)  ||
-                      $b cmp $a
-                    } @$list;
-   }
+   my($list,@args) = @_;
+   sort_length($list,@args);
+   @$list = reverse @$list;
+}
+
+sub cmp_rev_length {
+   my($x,$y) = @_;
+   return ($y <=> $x);
 }
 
 ###############################################################################
 =pod
 
-=item sort_ip, sort_rev_ip
+=item sort_ip, sort_rev_ip, cmp_ip, cmp_rev_ip
 
   use Sort::DataTypes qw(:all)
 
   sort_ip(\@list);
   sort_rev_ip(\@list);
 
-  sort_ip(\@list,%hash);
-  sort_rev_ip(\@list,%hash);
+  sort_ip(\@list,\%hash);
+  sort_rev_ip(\@list,\%hash);
 
-These sorts a list A.B.C.D IP numbers.
+  $flag = cmp_ip($x,$y);
+  $flag = cmp_rev_ip($x,$y);
+
+These sort/compare IP numbers of the form A.B.C.D.
 
 =cut
 
 sub sort_ip {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { _cmp_ip($hash{$a},$hash{$b}) } @$list;
+   my($list,$hash) = @_;
+   if (defined $hash) {
+      @$list = sort { cmp_ip($$hash{$a},$$hash{$b}) ||
+                      $a cmp $b
+                    } @$list;
    } else {
-      @$list = sort { _cmp_ip($a,$b) } @$list;
+      @$list = sort { cmp_ip($a,$b) } @$list;
    }
+}
+
+sub cmp_ip {
+   my($x,$y) = @_;
+   my(@x,@y);
+   (@x)=split('\.',$x);
+   (@y)=split('\.',$y);
+   return ($x[0] <=> $y[0]  ||
+           $x[1] <=> $y[1]  ||
+           $x[2] <=> $y[2]  ||
+           $x[3] <=> $y[3]);
 }
 
 sub sort_rev_ip {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { _cmp_ip($hash{$b},$hash{$a}) } @$list;
-   } else {
-      @$list = sort { _cmp_ip($b,$a) } @$list;
-   }
+   my($list,@args) = @_;
+   sort_ip($list,@args);
+   @$list = reverse @$list;
 }
 
-sub _cmp_ip {
-   my($a,$b) = @_;
-   my(@a,@b);
-   (@a)=split('\.',$a);
-   (@b)=split('\.',$b);
-   return ($a[0] <=> $b[0]  ||
-           $a[1] <=> $b[1]  ||
-           $a[2] <=> $b[2]  ||
-           $a[3] <=> $b[3]);
+sub cmp_rev_ip {
+   my($x,$y) = @_;
+   return ($y <=> $x);
 }
 
 ###############################################################################
 =pod
 
-=item sort_domain, sort_rev_domain, sort_numdomain, sort_rev_numdomain
+=item sort_domain, sort_rev_domain, cmp_domain, cmp_rev_domain
 
   use Sort::DataTypes qw(:all)
 
   sort_domain(\@list [,$sep]);
   sort_rev_domain(\@list [,$sep]);
 
-  sort_domain(\@list [,$sep] ,%hash);
-  sort_rev_domain(\@list [,$sep] ,%hash);
+  sort_domain(\@list, [$sep,] \%hash);
+  sort_rev_domain(\@list, [$sep,] \%hash);
 
-This sorts domain names (A.B.C...) or anything else consisting of a class,
+  $flag = cmp_domain($x,$y [,$sep]);
+  $flag = cmp_rev_domain($x,$y [,$sep]);
+
+These sort domain names (A.B.C...) or anything else consisting of a class,
 subclass, subsubclass, etc., with the most significant class at the right.
 
 Elements in the domain are separated from each other by a period (.)
@@ -366,16 +577,22 @@ domain ending with ".com" would come before any domain ending in ".edu".
 
   a.b < z.b < a.bb < z.bb < a.c
 
-A related type of sorting is:
+=item sort_numdomain, sort_rev_numdomain, cmp_numdomain, cmp_rev_numdomain
+
+  use Sort::DataTypes qw(:all)
 
   sort_numdomain(\@list [,$sep]);
   sort_rev_numdomain(\@list [,$sep]);
 
-  sort_numdomain(\@list [,$sep] ,%hash);
-  sort_rev_numdomain(\@list [,$sep] ,%hash);
+  sort_numdomain(\@list, [$sep,] \%hash);
+  sort_rev_numdomain(\@list, [$sep,] \%hash);
 
-numdomain sorting is identical to domain sorting except that if two
-elements in the domain are integers, numerical sorts will be done. So:
+  $flag = cmp_numdomain($x,$y [,$sep]);
+  $flag = cmp_rev_numdomain($x,$y [,$sep]);
+
+A related type of sorting is numdomain sorting. This is identical to
+domain sorting except that if two elements in the domain are integers,
+numerical sorts will be done. So:
 
   a.11.c < a.2.c
 
@@ -387,18 +604,59 @@ elements in the domain are integers, numerical sorts will be done. So:
 
    sub sort_domain {
       my($list,@arg) = @_;
-      if (! @arg  ||  ($#arg % 2) == 1) {
+      my($hash);
+      if ($#arg == 1) {
+         ($S,$hash) = @arg;
+      } elsif ($#arg == 0  &&  ! ref($arg[0])) {
+         $S = $arg[0];
+      } else {
+         $hash = $arg[0]  if (@arg);
          $S = '\.';
-      } else {
-         $S = shift(@arg);
       }
-      my %hash = @arg;
 
-      if (%hash) {
-         @$list = sort { _cmp_domain($hash{$a},$hash{$b}) } @$list;
+      if (defined $hash) {
+         @$list = sort { cmp_domain($$hash{$a},$$hash{$b}) ||
+                           $a cmp $b
+                        } @$list;
       } else {
-         @$list = sort { _cmp_domain($a,$b) } @$list;
+         @$list = sort { cmp_domain($a,$b) } @$list;
       }
+   }
+
+   sub cmp_domain {
+      my($x,$y,$sep) = @_;
+      $S = $sep  if (defined $sep);
+      $S = '\.'  if ($S eq "");
+      my(@x,@y);
+      (@x)=split(/$S/,$x);
+      (@y)=split(/$S/,$y);
+
+      while (@x) {
+         return 1  if (! @y);
+         my $xx  = pop(@x);
+         my $yy  = pop(@y);
+
+         my $ret;
+         if ($N  &&  $xx =~ /^\d+$/  &&  $yy =~ /^\d+$/) {
+            $ret = ($xx <=> $yy);
+         } else {
+            $ret = ($xx cmp $yy);
+         }
+         return $ret  if ($ret);
+      }
+      return -1  if (@y);
+      return  0;
+   }
+
+   sub sort_rev_domain {
+      my($list,@args) = @_;
+      sort_domain($list,@args);
+      @$list = reverse @$list;
+   }
+
+   sub cmp_rev_domain {
+      my($x,$y,@args) = @_;
+      return cmp_domain($y,$x,@args);
    }
 
    sub sort_numdomain {
@@ -408,88 +666,74 @@ elements in the domain are integers, numerical sorts will be done. So:
       @ret;
    }
 
-   sub sort_rev_domain {
-      my($list,@arg) = @_;
-      if (! @arg  ||  ($#arg % 2) == 1) {
-         $S = '\.';
-      } else {
-         $S = shift(@arg);
-      }
-      my %hash = @arg;
-
-      if (%hash) {
-         @$list = sort { _cmp_domain($hash{$b},$hash{$a}) } @$list;
-      } else {
-         @$list = sort { _cmp_domain($b,$a) } @$list;
-      }
+   sub cmp_numdomain {
+      $N = 1;
+      my $ret = cmp_domain(@_);
+      $N = 0;
+      $ret;
    }
 
    sub sort_rev_numdomain {
-      $N = 1;
-      my @ret = sort_rev_domain(@_);
-      $N = 0;
-      @ret;
+      my($list,@args) = @_;
+      sort_numdomain($list,@args);
+      @$list = reverse @$list;
    }
 
-   sub _cmp_domain {
-      my($a,$b) = @_;
-      my(@a,@b);
-      (@a)=split(/$S/,$a);
-      (@b)=split(/$S/,$b);
-
-      while (@a) {
-         return 1  if (! @b);
-         my $aa  = pop(@a);
-         my $bb  = pop(@b);
-
-         my $ret;
-         if ($N  &&  $aa =~ /^\d+$/  &&  $bb =~ /^\d+$/) {
-            $ret = ($aa <=> $bb);
-         } else {
-            $ret = ($aa cmp $bb);
-         }
-         return $ret  if ($ret);
-      }
-      return -1  if (@b);
-      return  0;
+   sub cmp_rev_numdomain {
+      my($x,$y,@args) = @_;
+      return cmp_numdomain($y,$x,@args);
    }
 }
 
 ###############################################################################
 =pod
 
-=item sort_path, sort_rev_path, sort_numpath, sort_rev_numpath
+=item sort_path, sort_rev_path, cmp_path, cmp_rev_path
 
   use Sort::DataTypes qw(:all)
 
   sort_path(\@list [,$sep]);
   sort_rev_path(\@list [,$sep]);
 
-  sort_path(\@list [,$sep] ,%hash);
-  sort_rev_path(\@list [,$sep] ,%hash);
+  sort_path(\@list, [$sep,] \%hash);
+  sort_rev_path(\@list, [$sep,] \%hash);
+
+  $flag = cmp_path($x,$y [,$sep]);
+  $flag = cmp_rev_path($x,$y [,$sep]);
 
 This sorts paths (/A/B/C...) or anything else consisting of a class,
 subclass, subsubclass, etc., with the most significant class at the left.
 
-Elements in a path are separated from each other by a slash (/) unless
-$sep is passed in. If $sep is passed in, it is a regular expression to
-split the elements in a path.
+Elements in a path (or classes, subclasses, etc.) are separated from
+each other by a slash (/) unless $sep is passed in. If $sep is passed
+in, it is a regular expression to split the elements in a path.
 
 Since the most significan element in the domain is at the left, you
 get the following behavior:
 
   a/b < a/z < aa/b < aa/z < b/b
 
-A related type of sorting is:
+When sorting lists that have a mixture of relative paths and
+explicit paths, the explicit paths will come first. So:
+
+  /b/c < a/b
+
+=item sort_numpath, sort_rev_numpath, cmp_numpath, cmp_rev_numpath
+
+  use Sort::DataTypes qw(:all)
 
   sort_numpath(\@list [,$sep]);
   sort_rev_numpath(\@list [,$sep]);
 
-  sort_numpath(\@list [,$sep] ,%hash);
-  sort_rev_numpath(\@list [,$sep] ,%hash);
+  sort_numpath(\@list, [$sep,] \%hash);
+  sort_rev_numpath(\@list, [$sep,] \%hash);
 
-numpath sorting is identical to path sorting except that if two
-elements in the path are integers, numerical sorts will be done. So:
+  $flag = cmp_numpath($x,$y [,$sep]);
+  $flag = cmp_rev_numpath($x,$y [,$sep]);
+
+A related type of sorting is numpath sorting. This is identical to
+path sorting except that if two elements in the path are integers,
+numerical sorts will be done. So:
 
   a/2/c < a/11/c
 
@@ -501,18 +745,59 @@ elements in the path are integers, numerical sorts will be done. So:
 
    sub sort_path {
       my($list,@arg) = @_;
-      if (! @arg  ||  ($#arg % 2) == 1) {
-         $S = '\.';
+      my($hash);
+      if ($#arg == 1) {
+         ($S,$hash) = @arg;
+      } elsif ($#arg == 0  &&  ! ref($arg[0])) {
+         $S = $arg[0];
       } else {
-         $S = shift(@arg);
+         $hash = $arg[0]  if (@arg);
+         $S = '\/';
       }
-      my %hash = @arg;
 
-      if (%hash) {
-         @$list = sort { _cmp_path($hash{$a},$hash{$b}) } @$list;
+      if (defined $hash) {
+         @$list = sort { cmp_path($$hash{$a},$$hash{$b}) ||
+                           $a cmp $b
+                        } @$list;
       } else {
-         @$list = sort { _cmp_path($a,$b) } @$list;
+         @$list = sort { cmp_path($a,$b) } @$list;
       }
+   }
+
+   sub cmp_path {
+      my($x,$y,$sep) = @_;
+      $S = $sep  if (defined $sep);
+      $S = '\/'  if ($S eq "");
+      my(@x,@y);
+      (@x)=split(/$S/,$x);
+      (@y)=split(/$S/,$y);
+
+      while (@x) {
+         return 1  if (! @y);
+         my $xx  = shift(@x);
+         my $yy  = shift(@y);
+
+         my $ret;
+         if ($N  &&  $xx =~ /^\d+$/  &&  $yy =~ /^\d+$/) {
+            $ret = ($xx <=> $yy);
+         } else {
+            $ret = ($xx cmp $yy);
+         }
+         return $ret  if ($ret);
+      }
+      return -1  if (@y);
+      return  0;
+   }
+
+   sub sort_rev_path {
+      my($list,@args) = @_;
+      sort_path($list,@args);
+      @$list = reverse @$list;
+   }
+
+   sub cmp_rev_path {
+      my($x,$y,@args) = @_;
+      return cmp_path($y,$x,@args);
    }
 
    sub sort_numpath {
@@ -522,65 +807,40 @@ elements in the path are integers, numerical sorts will be done. So:
       @ret;
    }
 
-   sub sort_rev_path {
-      my($list,@arg) = @_;
-      if (! @arg  ||  ($#arg % 2) == 1) {
-         $S = '\.';
-      } else {
-         $S = shift(@arg);
-      }
-      my %hash = @arg;
-
-      if (%hash) {
-         @$list = sort { _cmp_path($hash{$b},$hash{$a}) } @$list;
-      } else {
-         @$list = sort { _cmp_path($b,$a) } @$list;
-      }
+   sub cmp_numpath {
+      $N = 1;
+      my $ret = cmp_path(@_);
+      $N = 0;
+      $ret;
    }
 
    sub sort_rev_numpath {
-      $N = 1;
-      my @ret = sort_rev_path(@_);
-      $N = 0;
-      @ret;
+      my($list,@args) = @_;
+      sort_numpath($list,@args);
+      @$list = reverse @$list;
    }
 
-   sub _cmp_path {
-      my($a,$b) = @_;
-      my(@a,@b);
-      (@a)=split(/$S/,$a);
-      (@b)=split(/$S/,$b);
-
-      while (@a) {
-         return 1  if (! @b);
-         my $aa  = shift(@a);
-         my $bb  = shift(@b);
-
-         my $ret;
-         if ($N  &&  $aa =~ /^\d+$/  &&  $bb =~ /^\d+$/) {
-            $ret = ($aa <=> $bb);
-         } else {
-            $ret = ($aa cmp $bb);
-         }
-         return $ret  if ($ret);
-      }
-      return -1  if (@b);
-      return  0;
+   sub cmp_rev_numpath {
+      my($x,$y,@args) = @_;
+      return cmp_numpath($y,$x,@args);
    }
 }
 
 ###############################################################################
 =pod
 
-=item sort_random, sort_rev_random
+=item sort_random, sort_rev_random, cmp_random, cmp_rev_random
 
   use Sort::DataTypes qw(:all)
 
   sort_random(\@list);
   sort_rev_random(\@list);
 
-  sort_random(\@list,%hash);
-  sort_rev_random(\@list,%hash);
+  sort_random(\@list,\%hash);
+  sort_rev_random(\@list,\%hash);
+
+  $flag = cmp_random($x,$y);
+  $flag = cmp_rev_random($x,$y);
 
 This uses the Fisher-Yates algorithm to randomly shuffle an array in place.
 This routine was taken from the book
@@ -592,11 +852,12 @@ The sort_rev_random is identical, and is included simply for the situation
 where the sort routines are being called in some automatically generated
 code that may add the 'rev_' prefix.
 
+The cmp_random simply returns a random -1, 0, or 1.
+
 =cut
 
-# This routine was taken from The Perl Cookbook
 sub sort_random {
-   my($list,%hash) = @_;
+   my($list,$hash) = @_;
    _randomize();
 
    my $i;
@@ -606,8 +867,21 @@ sub sort_random {
       @$list[$i,$j] = @$list[$j,$i];
    }
 }
+
+sub cmp_random {
+   my($x,$y) = @_;
+   _randomize();
+   return int(rand(3)) - 1;
+}
+
 sub sort_rev_random {
-   sort_random(@_);
+   my($list,@args) = @_;
+   sort_random($list,@args);
+}
+
+sub cmp_rev_random {
+   my($x,$y) = @_;
+   return cmp_random($y,$x);
 }
 
 {
@@ -623,15 +897,18 @@ sub sort_rev_random {
 ###############################################################################
 =pod
 
-=item sort_version, sort_rev_version
+=item sort_version, sort_rev_version, cmp_version, cmp_rev_version
 
   use Sort::DataTypes qw(:all)
 
   sort_version(\@list);
   sort_rev_version(\@list);
 
-  sort_version(\@list,%hash);
-  sort_rev_version(\@list,%hash);
+  sort_version(\@list,\%hash);
+  sort_rev_version(\@list,\%hash);
+
+  $flag = cmp_version($x,$y);
+  $flag = cmp_rev_version($x,$y);
 
 These sorts a list of version numbers of the form MAJOR.MINOR.SUBMINOR ...
 (any number of levels are allowed). The following examples should illustrate
@@ -657,70 +934,77 @@ the ordering:
 =cut
 
 sub sort_version {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { _cmp_version($hash{$a},$hash{$b}) } @$list;
+   my($list,$hash) = @_;
+   if (defined $hash) {
+      @$list = sort { cmp_version($$hash{$a},$$hash{$b}) ||
+                      $a cmp $b
+                    } @$list;
    } else {
-      @$list = sort { _cmp_version($a,$b) } @$list;
+      @$list = sort { cmp_version($a,$b) } @$list;
    }
 }
 
-sub sort_rev_version {
-   my($list,%hash) = @_;
-   if (%hash) {
-      @$list = sort { _cmp_version($hash{$b},$hash{$a}) } @$list;
-   } else {
-      @$list = sort { _cmp_version($b,$a) } @$list;
-   }
-}
+sub cmp_version {
+   my($x,$y) = @_;
+   my(@x,@y);
+   (@x)=split(/\./,$x);
+   (@y)=split(/\./,$y);
 
-sub _cmp_version {
-   my($a,$b) = @_;
-   my(@a,@b);
-   (@a)=split(/\./,$a);
-   (@b)=split(/\./,$b);
+   while (@x) {
+      return 1  if (! @y);
+      my $xx=shift(@x);
+      my $yy=shift(@y);
 
-   while (@a) {
-      return 1  if (! @b);
-      my $aa=shift(@a);
-      my $bb=shift(@b);
-
-      if ($aa =~ /^(\d+)(.*)$/) {
-         my($av,$as) = ($1+0,$2);
-         if ($bb =~ /^(\d+)(.*)$/) {
-            my($bv,$bs) = ($1+0,$2);
-            my $ret = ($av <=> $bv);
+      if ($xx =~ /^(\d+)(.*)$/) {
+         my($xv,$xs) = ($1+0,$2);
+         if ($yy =~ /^(\d+)(.*)$/) {
+            my($yv,$ys) = ($1+0,$2);
+            my $ret = ($xv <=> $yv);
             return $ret  if ($ret);
-            return -1  if ($as && ! $bs);
-            return  1  if ($bs && ! $as);
-            $ret = ($aa cmp $bb);
+            return -1  if ($xs && ! $ys);
+            return  1  if ($ys && ! $xs);
+            $ret = ($xx cmp $yy);
             return $ret  if ($ret);
          } else {
             return 1;
          }
-      } elsif ($bb =~ /^(\d+)(.*)$/) {
+      } elsif ($yy =~ /^(\d+)(.*)$/) {
          return -1;
-      } elsif ($aa || $bb) {
-         my $ret=($aa cmp $bb);
+      } elsif ($xx || $yy) {
+         my $ret=($xx cmp $yy);
          return $ret  if ($ret);
       }
    }
-   return -1  if (@b);
+   return -1  if (@y);
    return  0;
+}
+
+sub sort_rev_version {
+   my($list,@args) = @_;
+   sort_version($list,@args);
+   @$list = reverse @$list;
+}
+
+sub cmp_rev_version {
+   my($x,$y) = @_;
+   return cmp_version($y,$x);
 }
 
 ###############################################################################
 =pod
 
-=item sort_date, sort_rev_date
+=item sort_date, sort_rev_date, cmp_date, cmp_rev_date
 
   use Sort::DataTypes qw(:all)
 
   sort_date(\@list);
   sort_rev_date(\@list);
 
-  sort_date(\@list,%hash);
-  sort_rev_date(\@list,%hash);
+  sort_date(\@list,\%hash);
+  sort_rev_date(\@list,\%hash);
+
+  $flag = cmp_date($x,$y);
+  $flag = cmp_rev_date($x,$y);
 
 These sorts a list of dates. Dates are anything that can be parsed
 with Date::Manip.
@@ -728,54 +1012,71 @@ with Date::Manip.
 =cut
 
 sub sort_date {
-   my($list,%hash) = @_;
-   my(@list) = @$list;
-   my %dates;
-   if (%hash) {
-      foreach my $key (keys %hash) {
-         $dates{ ParseDate($hash{$key}) } = $key;
+   my($list,$hash) = @_;
+   if (defined $hash) {
+      foreach my $key (@$list) {
+         $$hash{$key} = ParseDate($$hash{$key});
       }
    } else {
-      foreach my $date (@list) {
-         $dates{ ParseDate($date) } = $date;
+      foreach my $key (@$list) {
+         $$hash{$key} = ParseDate($key);
       }
    }
-   my @sorted = sort { Date_Cmp($a,$b) } keys %dates;
-   @list = ();
-   foreach my $date (@sorted) {
-      push(@list,$dates{$date});
-   }
-   @$list=@list;
+
+   @$list = sort { cmp_date($$hash{$a},$$hash{$b}) ||
+                     $a cmp $b
+                  } @$list;
+}
+
+sub cmp_date {
+   my($x,$y) = @_;
+   return Date_Cmp($x,$y);
 }
 
 sub sort_rev_date {
-   my($list,%hash) = @_;
-   sort_date($list,%hash);
+   my($list,@args) = @_;
+   sort_date($list,@args);
    @$list = reverse @$list;
+}
+
+sub cmp_rev_date {
+   my($x,$y) = @_;
+   return cmp_date($y,$x);
 }
 
 ###############################################################################
 =pod
 
-=item sort_line, sort_rev_line, sort_numline, sort_rev_numline
+=item sort_line, sort_rev_line, cmp_line, cmp_rev_line
 
   use Sort::DataTypes qw(:all)
 
   sort_line(\@list,$n [,$sep]);
   sort_rev_line(\@list,$n [,$sep]);
 
-  sort_line(\@list,$n [,$sep] ,%hash);
-  sort_rev_line(\@list,$n [,$sep] ,%hash);
+  sort_line(\@list,$n, [$sep,] \%hash);
+  sort_rev_line(\@list,$n, [$sep,] \%hash);
+
+  $flag = cmp_line($x,$y,$n [,$sep]);
+  $flag = cmp_rev_line($x,$y,$n [,$sep]);
 
 These take a list of lines and sort on the Nth field using $sep as the
-regular expression splitting the lines into fields. If no $sep is
-given, it defaults to white space.
+regular expression splitting the lines into fields. Fields are
+numbered starting at 0.  If no $sep is given, it defaults to white
+space.
+
+=item sort_numline, sort_rev_numline, cmp_numline, cmp_rev_numline
+
+  use Sort::DataTypes qw(:all)
 
   sort_numline(\@list,$n [,$sep]);
   sort_rev_numline(\@list,$n [,$sep]);
 
-  sort_numline(\@list,$n [,$sep] ,%hash);
-  sort_rev_numline(\@list,$n [,$sep] ,%hash);
+  sort_numline(\@list,$n, [$sep,] \%hash);
+  sort_rev_numline(\@list,$n, [$sep,] \%hash);
+
+  $flag = cmp_numline($x,$y,$n [,$sep]);
+  $flag = cmp_rev_numline($x,$y,$n [,$sep]);
 
 These are similar but will sort numerically if the Nth field is an
 integer, and alphabetically otherwise.
@@ -790,18 +1091,56 @@ integer, and alphabetically otherwise.
    sub sort_line {
       my($list,$n,@arg) = @_;
       $F = $n;
-      if (! @arg  ||  ($#arg % 2) == 1) {
+      my($hash);
+      if ($#arg == 1) {
+         ($S,$hash) = @arg;
+      } elsif ($#arg == 0  &&  ! ref($arg[0])) {
+         $S = $arg[0];
+      } else {
+         $hash = $arg[0]  if (@arg);
          $S = '\s+';
-      } else {
-         $S = shift(@arg);
       }
-      my %hash = @arg;
 
-      if (%hash) {
-         @$list = sort { _cmp_line($hash{$a},$hash{$b}) } @$list;
+      if (defined $hash) {
+         @$list = sort { cmp_line($$hash{$a},$$hash{$b}) ||
+                           $a cmp $b
+                        } @$list;
       } else {
-         @$list = sort { _cmp_line($a,$b) } @$list;
+         @$list = sort { cmp_line($a,$b) } @$list;
       }
+   }
+
+   sub cmp_line {
+      my($x,$y,@args) = @_;
+      $F = shift(@args)  if (@args);
+      $S = shift(@args)  if (@args);
+      $S = '\s+'  if ($S eq "");
+
+      my(@x,@y);
+      (@x)=split(/$S/,$x);
+      (@y)=split(/$S/,$y);
+
+      my $xx  = (defined $x[$F-1] ? $x[$F-1] : "");
+      my $yy  = (defined $y[$F-1] ? $y[$F-1] : "");
+
+      my $ret = 0;
+      if ($N  &&  $xx =~ /^\d+$/  &&  $yy =~ /^\d+$/) {
+         $ret = ($xx <=> $yy);
+      } else {
+         $ret = ($xx cmp $yy);
+      }
+      return $ret;
+   }
+
+   sub sort_rev_line {
+      my($list,@args) = @_;
+      sort_line($list,@args);
+      @$list = reverse @$list;
+   }
+
+   sub cmp_rev_line {
+      my($x,$y,@args) = @_;
+      return cmp_line($y,$x,@args);
    }
 
    sub sort_numline {
@@ -811,52 +1150,91 @@ integer, and alphabetically otherwise.
       @ret;
    }
 
-   sub sort_rev_line {
-      my($list,$n,@arg) = @_;
-      $F = $n;
-      if (! @arg  ||  ($#arg % 2) == 1) {
-         $S = '\S+';
-      } else {
-         $S = shift(@arg);
-      }
-      my %hash = @arg;
-
-      if (%hash) {
-         @$list = sort { _cmp_line($hash{$b},$hash{$a}) } @$list;
-      } else {
-         @$list = sort { _cmp_line($b,$a) } @$list;
-      }
+   sub cmp_numline {
+      $N = 1;
+      my $ret = cmp_line(@_);
+      $N = 0;
+      $ret;
    }
 
    sub sort_rev_numline {
-      $N = 1;
-      my @ret = sort_rev_line(@_);
-      $N = 0;
-      @ret;
+      my($list,@args) = @_;
+      sort_numline($list,@args);
+      @$list = reverse @$list;
    }
 
-   sub _cmp_line {
-      my($a,$b) = @_;
-      my(@a,@b);
-      (@a)=split(/$S/,$a);
-      (@b)=split(/$S/,$b);
-
-      my $aa  = (defined $a[$F-1] ? $a[$F-1] : "");
-      my $bb  = (defined $b[$F-1] ? $b[$F-1] : "");
-
-      my $ret = 0;
-      if ($N  &&  $aa =~ /^\d+$/  &&  $bb =~ /^\d+$/) {
-         $ret = ($aa <=> $bb);
-      } else {
-         $ret = ($aa cmp $bb);
-      }
-      return $ret;
+   sub cmp_rev_numline {
+      my($x,$y,@args) = @_;
+      return cmp_numline($y,$x,@args);
    }
+}
+
+###############################################################################
+=pod
+
+=item sort_function, sort_rev_function, cmp_function, cmp_rev_function
+
+  use Sort::DataTypes qw(:all)
+
+  sort_function(\@list,\&func);
+  sort_rev_function(\@list,\&func);
+
+  sort_function(\@list,\&func,\%hash);
+  sort_rev_function(\@list,\&func,\%hash);
+
+  $flag = cmp_function($x,$y,\&func);
+  $flag = cmp_rev_function($x,$y,\&func);
+
+This is a catch-all sort function. It takes a reference to a function
+suitable to compare two elements and return -1, 0, or 1 depending on
+the order of the elements.
+
+=cut
+
+sub sort_function {
+   my($list,$func,$hash) = @_;
+   if (defined $hash) {
+      @$list = sort { cmp_function($$hash{$a},$$hash{$b},$func) ||
+                      $a cmp $b
+                    } @$list;
+   } else {
+      @$list = sort { cmp_function($a,$b,$func) } @$list;
+   }
+}
+
+sub cmp_function {
+   my($x,$y,$func) = @_;
+   return &$func($x,$y);
+}
+
+sub sort_rev_function {
+   my($list,@args) = @_;
+   sort_function($list,@args);
+   @$list = reverse @$list;
+}
+
+sub cmp_rev_function {
+   my($x,$y,@args) = @_;
+   return cmp_function($y,$x,@args);
 }
 
 ###############################################################################
 ###############################################################################
 =pod
+
+=back
+
+=head1 BACKWARDS INCOMPATIBILITIES
+
+The following are a list of backwards incompatabilities.
+
+=over 4
+
+=item Version 2.00 handling of hashes
+
+In version 1.xx, when sorting by hash, the hash was passed in
+as the hash. As of 2.00, it is passed in by reference to avoid
+any confusion with optional arguments.
 
 =back
 

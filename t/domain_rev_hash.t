@@ -17,58 +17,29 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = '
-aaa.bbb
-aa.bbb
-SEP
-~
-  aaa.bbb
-  aa.bbb
+1 aaa.bbb 2 aa.bbb ~ 1 2
 
-aaa.bbb.ccc
-bbb.ccc
-aaa.ccc
-\.
-~
-  aaa.bbb.ccc
-  bbb.ccc
-  aaa.ccc
+\. 1 aaa.bbb.ccc 2 bbb.ccc 3 aaa.ccc ~ 1 2 3
 
-aaa.bbb
-aaa.ccc
-SEP
-~
-  aaa.ccc
-  aaa.bbb
+1 aaa.bbb 2 aaa.ccc ~ 2 1
 
-aaa::bbb
-aaa::ccc
-::
-~
-  aaa::ccc
-  aaa::bbb
+:: 1 aaa::bbb 2 aaa::ccc ~ 2 1
 
 ';
 
 sub test {
   (@test)=@_;
-  if ($test[$#test] eq "SEP") {
-    pop(@test);
-    $i=1;
-    %hash=map { $i++ => $_ } @test;
-    @tmp=(1..$i-1);
-    sort_rev_domain(\@tmp,%hash);
-    @test=map { $hash{$_} } @tmp;
-    return @test;
+  my $n    = $#test + 1;
+  my $sep  = (2*int($n/2) == $n ? "" : shift(@test));
+  my %hash = @test;
+  my @list = keys %hash;
+
+  if ($sep) {
+    sort_rev_domain(\@list,$sep,\%hash);
   } else {
-    $sep = pop(@test);
-    $i=1;
-    %hash=map { $i++ => $_ } @test;
-    @tmp=(1..$i-1);
-    sort_rev_domain(\@tmp,$sep,%hash);
-    @test=map { $hash{$_} } @tmp;
-    return @test;
+    sort_rev_domain(\@list,\%hash);
   }
-  return @test;
+  return @list;
 }
 
 print "Domain (hash,reverse)...\n";

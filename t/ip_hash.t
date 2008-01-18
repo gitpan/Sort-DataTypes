@@ -17,26 +17,16 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = "
-128.227.208.63
-10.227.208.42
-128.227.208.75
-10.227.208.3
-~
-  10.227.208.3
-  10.227.208.42
-  128.227.208.63
-  128.227.208.75
+a 128.227.208.63 b 10.227.208.42 c 128.227.208.75 d 10.227.208.3 ~ d b a c
 
 ";
 
 sub test {
   (@test)=@_;
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_ip(\@tmp,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  %hash=@test;
+  @list=keys %hash;
+  sort_ip(\@list,\%hash);
+  return @list;
 }
 
 print "IP (hash)...\n";

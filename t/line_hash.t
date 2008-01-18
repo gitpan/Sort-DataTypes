@@ -17,39 +17,26 @@ unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
 $tests = '
-a:3:b:c
-e:2:a:f
-c:1:x:d
-1
-:
-   ~
-   a:3:b:c
-   c:1:x:d
-   e:2:a:f
+1 : a a:3:b:c b e:2:a:f c c:1:x:d ~ a c b
 
-a:3:b:c
-e:2:a:f
-c:1:x:d
-3
-:
-   ~
-   e:2:a:f
-   a:3:b:c
-   c:1:x:d
+3 : a a:3:b:c b e:2:a:f c c:1:x:d ~ b a c
 
 ';
 
 sub test {
   (@test)=@_;
-  $sep   = pop(@test);
-  $n     = pop(@test);
+  my $f    = shift(@test);
+  my $n    = $#test + 1;
+  my $sep  = (2*int($n/2) == $n ? "" : shift(@test));
+  my %hash = @test;
+  my @list = keys %hash;
 
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_line(\@tmp,$n,$sep,%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  if ($sep) {
+    sort_line(\@list,$f,$sep,\%hash);
+  } else {
+    sort_line(\@list,$f,\%hash);
+  }
+  return @list;
 }
 
 print "Line (hash)...\n";
