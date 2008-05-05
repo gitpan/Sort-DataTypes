@@ -4,31 +4,12 @@ package Sort::DataTypes;
 # under the same terms as Perl itself.
 
 ###############################################################################
-# HISTORY
-###############################################################################
 
-# Version 1.00  2007-09-05
-#    Initial release
-#
-# Version 1.01  2007-12-17
-#    Added separator to domain sorting.
-#    Added numdomain and numpath sorting.
-#    Added line and numline sorting.
-#    Added sort_valid_method and sort_by_method routines.
-#
-# Version 2.00  2008-01-18
-#    Fixed a bug where path sorting didn't have "/" as the default separator.
-#    Added sort_function routines.
-#    Updated test.pl.
-#    Added all the cmp_* routines.
-#    Changed %hash to be passed in by reference.
-#    Simplified all routines and tests.
-
-$VERSION = "2.00";
-###############################################################################
+$VERSION = "2.01";
 
 require 5.000;
 require Exporter;
+use warnings;
 use Date::Manip;
 Date_Init();
 
@@ -144,13 +125,13 @@ and @list contains (foo,bar,ick), then sorting:
 since "ick" corresponds to a numerical value of 1, "foo" to 3, and
 "bar" to 5.
 
-=over 4
-
 =cut
 
 ###############################################################################
 ###############################################################################
 =pod
+
+=over 4
 
 =item sort_valid_method, cmp_valid_method
 
@@ -594,7 +575,7 @@ A related type of sorting is numdomain sorting. This is identical to
 domain sorting except that if two elements in the domain are integers,
 numerical sorts will be done. So:
 
-  a.11.c < a.2.c
+  a.2.c < a.11.c
 
 =cut
 
@@ -708,7 +689,7 @@ Elements in a path (or classes, subclasses, etc.) are separated from
 each other by a slash (/) unless $sep is passed in. If $sep is passed
 in, it is a regular expression to split the elements in a path.
 
-Since the most significan element in the domain is at the left, you
+Since the most significant element in the domain is at the left, you
 get the following behavior:
 
   a/b < a/z < aa/b < aa/z < b/b
@@ -1226,7 +1207,7 @@ sub cmp_rev_function {
 
 =head1 BACKWARDS INCOMPATIBILITIES
 
-The following are a list of backwards incompatabilities.
+The following are a list of backwards incompatibilities.
 
 =over 4
 
@@ -1241,6 +1222,11 @@ any confusion with optional arguments.
 =head1 KNOWN PROBLEMS
 
 None at this point.
+
+=head1 LICENSE
+
+This script is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
 
 =head1 AUTHOR
 

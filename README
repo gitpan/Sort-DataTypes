@@ -53,7 +53,8 @@ ROUTINES
     since "ick" corresponds to a numerical value of 1, "foo" to 3, and "bar"
     to 5.
 
-    sort_valid_method, cmp_valid_method
+        sort_valid_method, cmp_valid_method
+
           use Sort::DataTypes qw(:all)
 
           $flag = sort_valid_method($string);
@@ -72,7 +73,8 @@ ROUTINES
 
         Note that the methods must NOT include the "sort_" or "cmp_" prefix.
 
-    sort_by_method, cmp_by_method
+        sort_by_method, cmp_by_method
+
           use Sort::DataTypes qw(:all)
 
           sort_by_method($method,\@list [,@args]);
@@ -84,7 +86,8 @@ ROUTINES
 
         If the method is not valid, the list is left untouched.
 
-    sort_numerical, sort_rev_numerical, cmp_numerical, cmp_rev_numerical
+        sort_numerical, sort_rev_numerical, cmp_numerical, cmp_rev_numerical
+
           use Sort::DataTypes qw(:all)
 
           sort_numerical(\@list);
@@ -108,7 +111,9 @@ ROUTINES
         being automatically generated, numerical sorts won't have to be a
         special case.
 
-    sort_alphabetic, sort_rev_alphabetic, cmp_alphabetic, cmp_rev_alphabetic
+        sort_alphabetic, sort_rev_alphabetic, cmp_alphabetic,
+        cmp_rev_alphabetic
+
           use Sort::DataTypes qw(:all)
 
           sort_alphabetic(\@list);
@@ -124,7 +129,8 @@ ROUTINES
         reason to call these, and they are included for the sake of
         completeness.
 
-    sort_length, sort_rev_length, cmp_length, cmp_rev_length
+        sort_length, sort_rev_length, cmp_length, cmp_rev_length
+
           use Sort::DataTypes qw(:all)
 
           sort_length(\@list);
@@ -139,7 +145,8 @@ ROUTINES
         These take strings and compare them by length and alphabetically if
         they are the same length.
 
-    sort_ip, sort_rev_ip, cmp_ip, cmp_rev_ip
+        sort_ip, sort_rev_ip, cmp_ip, cmp_rev_ip
+
           use Sort::DataTypes qw(:all)
 
           sort_ip(\@list);
@@ -153,7 +160,8 @@ ROUTINES
 
         These sort/compare IP numbers of the form A.B.C.D.
 
-    sort_domain, sort_rev_domain, cmp_domain, cmp_rev_domain
+        sort_domain, sort_rev_domain, cmp_domain, cmp_rev_domain
+
           use Sort::DataTypes qw(:all)
 
           sort_domain(\@list [,$sep]);
@@ -179,7 +187,8 @@ ROUTINES
 
           a.b < z.b < a.bb < z.bb < a.c
 
-    sort_numdomain, sort_rev_numdomain, cmp_numdomain, cmp_rev_numdomain
+        sort_numdomain, sort_rev_numdomain, cmp_numdomain, cmp_rev_numdomain
+
           use Sort::DataTypes qw(:all)
 
           sort_numdomain(\@list [,$sep]);
@@ -195,9 +204,10 @@ ROUTINES
         domain sorting except that if two elements in the domain are
         integers, numerical sorts will be done. So:
 
-          a.11.c < a.2.c
+          a.2.c < a.11.c
 
-    sort_path, sort_rev_path, cmp_path, cmp_rev_path
+        sort_path, sort_rev_path, cmp_path, cmp_rev_path
+
           use Sort::DataTypes qw(:all)
 
           sort_path(\@list [,$sep]);
@@ -218,7 +228,7 @@ ROUTINES
         passed in, it is a regular expression to split the elements in a
         path.
 
-        Since the most significan element in the domain is at the left, you
+        Since the most significant element in the domain is at the left, you
         get the following behavior:
 
           a/b < a/z < aa/b < aa/z < b/b
@@ -228,7 +238,8 @@ ROUTINES
 
           /b/c < a/b
 
-    sort_numpath, sort_rev_numpath, cmp_numpath, cmp_rev_numpath
+        sort_numpath, sort_rev_numpath, cmp_numpath, cmp_rev_numpath
+
           use Sort::DataTypes qw(:all)
 
           sort_numpath(\@list [,$sep]);
@@ -246,7 +257,8 @@ ROUTINES
 
           a/2/c < a/11/c
 
-    sort_random, sort_rev_random, cmp_random, cmp_rev_random
+        sort_random, sort_rev_random, cmp_random, cmp_rev_random
+
           use Sort::DataTypes qw(:all)
 
           sort_random(\@list);
@@ -270,7 +282,8 @@ ROUTINES
 
         The cmp_random simply returns a random -1, 0, or 1.
 
-    sort_version, sort_rev_version, cmp_version, cmp_rev_version
+        sort_version, sort_rev_version, cmp_version, cmp_rev_version
+
           use Sort::DataTypes qw(:all)
 
           sort_version(\@list);
@@ -303,7 +316,8 @@ ROUTINES
                                equal in the number part and equal in the
                                remaining part are compared alphabetically.
 
-    sort_date, sort_rev_date, cmp_date, cmp_rev_date
+        sort_date, sort_rev_date, cmp_date, cmp_rev_date
+
           use Sort::DataTypes qw(:all)
 
           sort_date(\@list);
@@ -318,7 +332,8 @@ ROUTINES
         These sorts a list of dates. Dates are anything that can be parsed
         with Date::Manip.
 
-    sort_line, sort_rev_line, cmp_line, cmp_rev_line
+        sort_line, sort_rev_line, cmp_line, cmp_rev_line
+
           use Sort::DataTypes qw(:all)
 
           sort_line(\@list,$n [,$sep]);
@@ -335,7 +350,8 @@ ROUTINES
         numbered starting at 0. If no $sep is given, it defaults to white
         space.
 
-    sort_numline, sort_rev_numline, cmp_numline, cmp_rev_numline
+        sort_numline, sort_rev_numline, cmp_numline, cmp_rev_numline
+
           use Sort::DataTypes qw(:all)
 
           sort_numline(\@list,$n [,$sep]);
@@ -350,7 +366,8 @@ ROUTINES
         These are similar but will sort numerically if the Nth field is an
         integer, and alphabetically otherwise.
 
-    sort_function, sort_rev_function, cmp_function, cmp_rev_function
+        sort_function, sort_rev_function, cmp_function, cmp_rev_function
+
           use Sort::DataTypes qw(:all)
 
           sort_function(\@list,\&func);
@@ -367,7 +384,7 @@ ROUTINES
         depending on the order of the elements.
 
 BACKWARDS INCOMPATIBILITIES
-    The following are a list of backwards incompatabilities.
+    The following are a list of backwards incompatibilities.
 
     Version 2.00 handling of hashes
         In version 1.xx, when sorting by hash, the hash was passed in as the
@@ -379,4 +396,12 @@ KNOWN PROBLEMS
 
 AUTHOR
     Sullivan Beck (sbeck@cpan.org)
+
+POD ERRORS
+    Hey! The above document had some coding errors, which are explained
+    below:
+
+    Around line 127:
+        You can't have =items (as at line 135) unless the first thing after
+        the =over is an =item
 
