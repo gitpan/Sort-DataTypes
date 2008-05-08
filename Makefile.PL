@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
 	NAME             => 'Sort::DataTypes',
-	VERSION_FROM     => 'DataTypes.pm',
+	VERSION	         => '2.02',
 	($] >= 5.005
 	? (ABSTRACT=>'Sort a list of data using methods relevant to the type of data',
 	   AUTHOR  =>'Sullivan Beck (sbeck@cpan.org)')

@@ -1,6 +1,7 @@
 Build.PL
-DataTypes.pm
 HISTORY
+lib/Sort/DataTypes.pm
+lib/Sort/DataTypes.pod
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
