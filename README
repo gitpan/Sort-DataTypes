@@ -173,8 +173,8 @@ ROUTINES
         unless $sep is passed in. If $sep is passed in, it is a regular
         expression to split the elements in a domain.
 
-        Since the most significan element in the domain is at the right, any
-        domain ending with ".com" would come before any domain ending in
+        Since the most significant element in the domain is at the right,
+        any domain ending with ".com" would come before any domain ending in
         ".edu".
 
           a.b < z.b < a.bb < z.bb < a.c
@@ -196,6 +196,19 @@ ROUTINES
         integers, numerical sorts will be done. So:
 
           a.2.c < a.11.c
+
+        It should be noted that if a field may be either numeric or
+        alphanumeric, sorting with this method may yield unexpected results.
+        For example, sorting the three elements:
+
+          a.1.b
+          a.2.b
+          a.X.b
+
+        will use numeric comparisons when comparing the 2nd field of the
+        first and second elements, but it will use alphabetic comparisons
+        when comparing the first and third elements (or the second and third
+        elements).
 
     sort_path, sort_rev_path, cmp_path, cmp_rev_path
           use Sort::DataTypes qw(:all)
@@ -259,7 +272,7 @@ ROUTINES
           $flag = cmp_rev_random($x,$y);
 
         This uses the Fisher-Yates algorithm to randomly shuffle an array in
-        place. This routine was taken from the book
+        place. This routine was derived from the book
 
           The Perl Cookbook
           Tom Christiansen and Nathan Torkington

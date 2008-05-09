@@ -1,6 +1,6 @@
 ---
 name: Sort-DataTypes
-version: 2.02
+version: 2.03
 author:
   - 'Sullivan Beck <sbeck@cpan.org>'
 abstract: Sort a list of data using methods relevant to the type of data
@@ -15,7 +15,7 @@ build_requires:
 provides:
   Sort::DataTypes:
     file: lib/Sort/DataTypes.pm
-    version: 2.02
+    version: 2.03
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
