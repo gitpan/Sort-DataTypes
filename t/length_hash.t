@@ -16,13 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-1 foo 2 bar 3 zed ~ 2 1 3
-
-1 foo 2 a 3 mi 4 m 5 mo 6 zed ~ 2 4 3 5 1 6
-
-";
-
 sub test {
   (@test)=@_;
   %hash=@test;
@@ -30,6 +23,13 @@ sub test {
   sort_length(\@list,\%hash);
   return @list;
 }
+
+$tests = "
+1 foo 2 bar 3 zed ~ 2 1 3
+
+1 foo 2 a 3 mi 4 m 5 mo 6 zed ~ 2 4 3 5 1 6
+
+";
 
 print "Length (hash)...\n";
 test_Func(\&test,$tests,$runtests);

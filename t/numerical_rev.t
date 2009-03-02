@@ -16,18 +16,18 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  sort_rev_numerical(\@test);
+  return @test;
+}
+
 $tests = "
 1 3 2 ~ 3 2 1
 
 -2 -3 -1 ~ -1 -2 -3
 
 ";
-
-sub test {
-  (@test)=@_;
-  sort_rev_numerical(\@test);
-  return @test;
-}
 
 print "Numerical (reverse)...\n";
 test_Func(\&test,$tests,$runtests);

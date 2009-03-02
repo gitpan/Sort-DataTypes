@@ -16,11 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-a 3 b 5 c 1 ~ c a b
-
-";
-
 sub test {
   (@test)=@_;
   %hash=@test;
@@ -28,6 +23,11 @@ sub test {
   sort_numerical(\@list,\%hash);
   return @list;
 }
+
+$tests = "
+a 3 b 5 c 1 ~ c a b
+
+";
 
 print "Numerical (hash)...\n";
 test_Func(\&test,$tests,$runtests);

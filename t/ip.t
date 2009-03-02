@@ -16,6 +16,12 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  sort_ip(\@test);
+  return @test;
+}
+
 $tests = "
 128.227.208.63
 10.227.208.42
@@ -27,13 +33,18 @@ $tests = "
   128.227.208.63
   128.227.208.75
 
+10.20.30.40
+10.20.30.41/4
+10.20.30.41
+10.20.30.42
+10.20.30.41/16
+~
+  10.20.30.40
+  10.20.30.41
+  10.20.30.41/4
+  10.20.30.41/16
+  10.20.30.42
 ";
-
-sub test {
-  (@test)=@_;
-  sort_ip(\@test);
-  return @test;
-}
 
 print "IP...\n";
 test_Func(\&test,$tests,$runtests);

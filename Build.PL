@@ -3,7 +3,7 @@ use Module::Build;
 
 my $build = Module::Build->new(
 	license            => 'perl',
-	dist_version       => '2.03',
+	dist_version       => '2.04',
 	dist_author        => 'Sullivan Beck <sbeck@cpan.org>',
 	module_name        => 'Sort::DataTypes',
 	dist_abstract      => 'Sort a list of data using methods relevant to the type of data',

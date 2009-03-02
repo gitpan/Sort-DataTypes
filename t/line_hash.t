@@ -16,13 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = '
-1 : a a:3:b:c b e:2:a:f c c:1:x:d ~ a c b
-
-3 : a a:3:b:c b e:2:a:f c c:1:x:d ~ b a c
-
-';
-
 sub test {
   (@test)=@_;
   my $f    = shift(@test);
@@ -38,6 +31,13 @@ sub test {
   }
   return @list;
 }
+
+$tests = '
+1 : a a:3:b:c b e:2:a:f c c:1:x:d ~ a c b
+
+3 : a a:3:b:c b e:2:a:f c c:1:x:d ~ b a c
+
+';
 
 print "Line (hash)...\n";
 test_Func(\&test,$tests,$runtests);

@@ -16,6 +16,14 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)= @_;
+  $sep   = pop(@test);
+  $n     = pop(@test);
+  sort_line(\@test,$n,$sep);
+  return @test;
+}
+
 $tests = '
 a:3:b:c
 e:2:a:f
@@ -38,14 +46,6 @@ c:1:x:d
    c:1:x:d
 
 ';
-
-sub test {
-  (@test)= @_;
-  $sep   = pop(@test);
-  $n     = pop(@test);
-  sort_line(\@test,$n,$sep);
-  return @test;
-}
 
 print "Line...\n";
 test_Func(\&test,$tests,$runtests);

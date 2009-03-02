@@ -16,6 +16,14 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  %hash=@test;
+  @list=keys %hash;
+  sort_rev_date(\@list,\%hash);
+  return @list;
+}
+
 $tests = "
 a
 Jul 4 2000
@@ -32,14 +40,6 @@ Jan 3 2001
   c
 
 ";
-
-sub test {
-  (@test)=@_;
-  %hash=@test;
-  @list=keys %hash;
-  sort_rev_date(\@list,\%hash);
-  return @list;
-}
 
 print "Date (hash,reverse)...\n";
 test_Func(\&test,$tests,$runtests);

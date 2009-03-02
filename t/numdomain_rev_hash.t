@@ -16,16 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = '
-a.11.c
-a.2.c
-SEP
-~
-  a.11.c
-  a.2.c
-
-';
-
 sub test {
   (@test)=@_;
   if ($test[$#test] eq "SEP") {
@@ -47,6 +37,16 @@ sub test {
   }
   return @test;
 }
+
+$tests = '
+a.11.c
+a.2.c
+SEP
+~
+  a.11.c
+  a.2.c
+
+';
 
 print "NumDomain (hash,reverse)...\n";
 test_Func(\&test,$tests,$runtests);

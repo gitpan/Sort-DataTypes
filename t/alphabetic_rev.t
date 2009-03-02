@@ -16,16 +16,16 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-foo bar zed ~ zed foo bar
-
-";
-
 sub test {
   (@test)=@_;
   sort_rev_alphabetic(\@test);
   return @test;
 }
+
+$tests = "
+foo bar zed ~ zed foo bar
+
+";
 
 print "Alphabetic (reverse)...\n";
 test_Func(\&test,$tests,$runtests);

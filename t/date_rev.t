@@ -16,6 +16,12 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  sort_rev_date(\@test);
+  return @test;
+}
+
 $tests = "
 Jul 4 2000
 May 31 2000
@@ -28,12 +34,6 @@ Jan 3 2001
   Dec 31 1999
 
 ";
-
-sub test {
-  (@test)=@_;
-  sort_rev_date(\@test);
-  return @test;
-}
 
 print "Date (reverse)...\n";
 test_Func(\&test,$tests,$runtests);

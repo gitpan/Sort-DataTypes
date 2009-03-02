@@ -16,6 +16,18 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  if ($test[$#test] eq "SEP") {
+    pop(@test);
+    sort_domain(\@test);
+  } else {
+    $sep = pop(@test);
+    sort_domain(\@test,$sep);
+  }
+  return @test;
+}
+
 $tests = '
 aaa.bbb
 aa.bbb
@@ -64,18 +76,6 @@ aaa::ccc
   aaa::ccc
 
 ';
-
-sub test {
-  (@test)=@_;
-  if ($test[$#test] eq "SEP") {
-    pop(@test);
-    sort_domain(\@test);
-  } else {
-    $sep = pop(@test);
-    sort_domain(\@test,$sep);
-  }
-  return @test;
-}
 
 print "Domain...\n";
 test_Func(\&test,$tests,$runtests);

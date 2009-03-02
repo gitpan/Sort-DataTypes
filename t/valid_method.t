@@ -16,16 +16,16 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  return sort_valid_method(@test);
+}
+
 $tests = '
 numerical ~ 1
 
 foobar ~ 0
 ';
-
-sub test {
-  (@test)=@_;
-  return sort_valid_method(@test);
-}
 
 print "ValidMethod...\n";
 test_Func(\&test,$tests,$runtests);

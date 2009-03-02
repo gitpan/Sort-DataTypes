@@ -16,6 +16,12 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  sort_rev_length(\@test);
+  return @test;
+}
+
 $tests = "
 foo bar zed ~ zed foo bar
 
@@ -24,12 +30,6 @@ foo a mi m mo zed ~ zed foo mo mi m a
 aaa ccc bbb ~ ccc bbb aaa
 
 ";
-
-sub test {
-  (@test)=@_;
-  sort_rev_length(\@test);
-  return @test;
-}
 
 print "Length (reverse)...\n";
 test_Func(\&test,$tests,$runtests);

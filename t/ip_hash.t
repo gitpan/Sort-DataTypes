@@ -16,11 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-a 128.227.208.63 b 10.227.208.42 c 128.227.208.75 d 10.227.208.3 ~ d b a c
-
-";
-
 sub test {
   (@test)=@_;
   %hash=@test;
@@ -28,6 +23,27 @@ sub test {
   sort_ip(\@list,\%hash);
   return @list;
 }
+
+$tests = "
+a 128.227.208.63 b 10.227.208.42 c 128.227.208.75 d 10.227.208.3 ~ d b a c
+
+a
+10.20.30.40
+b
+10.20.30.41/4
+c
+10.20.30.41
+d
+10.20.30.42
+e
+10.20.30.41/16
+~
+  a
+  c
+  b
+  e
+  d
+";
 
 print "IP (hash)...\n";
 test_Func(\&test,$tests,$runtests);

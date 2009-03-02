@@ -16,6 +16,14 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  %hash=@test;
+  @list=keys %hash;
+  sort_rev_version(\@list,\%hash);
+  return @list;
+}
+
 $tests = "
 a 1.1.x b 1.2 c 1.2.x ~ c b a
 
@@ -28,14 +36,6 @@ a 1.a b 1.2a ~ b a
 a 1.01a b 1.1a ~ b a
 
 ";
-
-sub test {
-  (@test)=@_;
-  %hash=@test;
-  @list=keys %hash;
-  sort_rev_version(\@list,\%hash);
-  return @list;
-}
 
 print "Version (hash,reverse)...\n";
 test_Func(\&test,$tests,$runtests);

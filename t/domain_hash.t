@@ -16,17 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = '
-1 aaa.bbb 2 aa.bbb ~ 2 1
-
-\. 1 aaa.bbb.ccc 2 bbb.ccc 3 aaa.ccc ~ 3 2 1
-
-1 aaa.bbb 2 aaa.ccc ~ 1 2
-
-:: 1 aaa::bbb 2 aaa::ccc ~ 1 2
-
-';
-
 sub test {
   (@test)=@_;
   my $n    = $#test + 1;
@@ -41,6 +30,17 @@ sub test {
   }
   return @list;
 }
+
+$tests = '
+1 aaa.bbb 2 aa.bbb ~ 2 1
+
+\. 1 aaa.bbb.ccc 2 bbb.ccc 3 aaa.ccc ~ 3 2 1
+
+1 aaa.bbb 2 aaa.ccc ~ 1 2
+
+:: 1 aaa::bbb 2 aaa::ccc ~ 1 2
+
+';
 
 print "Domain (hash)...\n";
 test_Func(\&test,$tests,$runtests);

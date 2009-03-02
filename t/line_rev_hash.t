@@ -16,6 +16,19 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  $sep   = pop(@test);
+  $n     = pop(@test);
+
+  $i=1;
+  %hash=map { $i++ => $_ } @test;
+  @tmp=(1..$i-1);
+  sort_rev_line(\@tmp,$n,$sep,\%hash);
+  @test=map { $hash{$_} } @tmp;
+  return @test;
+}
+
 $tests = '
 a:3:b:c
 e:2:a:f
@@ -38,19 +51,6 @@ c:1:x:d
    e:2:a:f
 
 ';
-
-sub test {
-  (@test)=@_;
-  $sep   = pop(@test);
-  $n     = pop(@test);
-
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_rev_line(\@tmp,$n,$sep,\%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
-}
 
 print "Line (hash,reverse)...\n";
 test_Func(\&test,$tests,$runtests);

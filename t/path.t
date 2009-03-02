@@ -16,6 +16,13 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  $sep = pop(@test);
+  sort_path(\@test,$sep);
+  return @test;
+}
+
 $tests = '
 aa.a
 a.b
@@ -62,13 +69,6 @@ a/b/c
    aa/a
 
 ';
-
-sub test {
-  (@test)=@_;
-  $sep = pop(@test);
-  sort_path(\@test,$sep);
-  return @test;
-}
 
 print "Path...\n";
 test_Func(\&test,$tests,$runtests);

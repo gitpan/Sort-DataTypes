@@ -16,6 +16,12 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  (@test)=@_;
+  sort_rev_version(\@test);
+  return @test;
+}
+
 $tests = "
 1.1.x 1.2 1.2.x ~ 1.2.x 1.2 1.1.x
 
@@ -28,12 +34,6 @@ $tests = "
 1.01a 1.1a ~ 1.1a 1.01a
 
 ";
-
-sub test {
-  (@test)=@_;
-  sort_rev_version(\@test);
-  return @test;
-}
 
 print "Version (reverse)...\n";
 test_Func(\&test,$tests,$runtests);

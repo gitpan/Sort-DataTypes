@@ -16,19 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-abc
-bcd
-mno
-nop
-~
-  mno
-  nop
-  abc
-  bcd
-
-";
-
 # Do an alphabetic sort except put m-z before a-l)
 sub testcmp {
   my($x,$y) = @_;
@@ -46,6 +33,19 @@ sub test {
   sort_function(\@test,\&testcmp);
   return @test;
 }
+
+$tests = "
+abc
+bcd
+mno
+nop
+~
+  mno
+  nop
+  abc
+  bcd
+
+";
 
 print "Function...\n";
 test_Func(\&test,$tests,$runtests);

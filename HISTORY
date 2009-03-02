@@ -32,5 +32,9 @@ Version 2.03  2008-05-09
    Final changes to meet requirements on http://cpants.perl.org/
    Bug fix so it won't fail with "Too early to specify a build action"
 
-Version 2.04
+Version 2.04  2009-03-02
+   Minor POD fix
+   Added CIDR support to IP routines.  Mason Brown <tmb@nanite.net>
+
+Version 2.05
 

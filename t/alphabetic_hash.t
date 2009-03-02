@@ -16,11 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = "
-1 a 2 c 3 b ~ 1 3 2
-
-";
-
 sub test {
   (@test)=@_;
   %hash=@test;
@@ -28,6 +23,11 @@ sub test {
   sort_alphabetic(\@list,\%hash);
   return @list;
 }
+
+$tests = "
+1 a 2 c 3 b ~ 1 3 2
+
+";
 
 print "Alphabetic (hash)...\n";
 test_Func(\&test,$tests,$runtests);

@@ -10,13 +10,13 @@ Sort::DataTypes - Sort a list of data using methods relevant to the type of data
 
 =head1 DESCRIPTION
 
-This allows you to sort a list of data elements using methods that are
-relevant to the type of data it is. This modules does not attempt to
-be the fastest sorter on the block. If you are sorting thousands of
-elements and need a lot of speed, you should refer to a module
-specializing in the specific type of sort you will be doing. However,
-to do smaller sorts of different types of data, this is the module to
-use.
+This module allows you to sort a list of data elements using methods
+that are relevant to the type of data contained in the list. This
+modules does not attempt to be the fastest sorter on the block. If you
+are sorting thousands of elements and need a lot of speed, you should
+refer to a module specializing in the specific type of sort you will
+be doing. However, to do smaller sorts of different types of data,
+this is the module to use.
 
 =head1 ROUTINES
 
@@ -81,18 +81,6 @@ $string in the module. For example, there is a function
      => 0
 
 Note that the methods must NOT include the "sort_" or "cmp_" prefix.
-
-=cut
-
-sub sort_valid_method {
-   my($method) = @_;
-   return (exists $methods{$method} ? 1 : 0);
-}
-
-sub cmp_valid_method {
-   my($method) = @_;
-   return (exists $methods{$method} ? 1 : 0);
-}
 
 =item sort_by_method, cmp_by_method
 
@@ -177,6 +165,20 @@ are the same length.
   $flag = cmp_rev_ip($x,$y);
 
 These sort/compare IP numbers of the form A.B.C.D.
+
+The list can be a list of pure IPs or the CIDR representation including
+the netmask (A.B.C.D/MASK).
+
+When sorting CIDR representations, if the IP part of two elements is
+identical, the following two rules are used:
+
+  an element without a mask comes before one that has a mask
+
+  two elements with masks are sorted by mask
+
+So the following elements are in sorted order:
+
+  10.20.30.40 < 10.20.30.40/4 < 10.20.30.40/16
 
 =item sort_domain, sort_rev_domain, cmp_domain, cmp_rev_domain
 

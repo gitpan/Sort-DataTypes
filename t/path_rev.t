@@ -16,19 +16,19 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = '
-aa.a a.b c.d.e a.b.c \. ~ c.d.e aa.a a.b.c a.b
-
-aa/a a/b c/d/e a/b/c / ~ c/d/e aa/a a/b/c a/b
-
-';
-
 sub test {
   (@test)=@_;
   $sep = pop(@test);
   sort_rev_path(\@test,$sep);
   return @test;
 }
+
+$tests = '
+aa.a a.b c.d.e a.b.c \. ~ c.d.e aa.a a.b.c a.b
+
+aa/a a/b c/d/e a/b/c / ~ c/d/e aa/a a/b/c a/b
+
+';
 
 print "Path (reverse)...\n";
 test_Func(\&test,$tests,$runtests);

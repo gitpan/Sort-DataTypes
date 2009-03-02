@@ -1,11 +1,11 @@
 package Sort::DataTypes;
-# Copyright (c) 2007-2008 Sullivan Beck. All rights reserved.
+# Copyright (c) 2007-2009 Sullivan Beck. All rights reserved.
 # This program is free software; you can redistribute it and/or modify it
 # under the same terms as Perl itself.
 
 ###############################################################################
 
-$VERSION = "2.03";
+$VERSION = "2.04";
 
 require 5.000;
 require Exporter;
@@ -322,12 +322,18 @@ sub sort_ip {
 sub cmp_ip {
    my($x,$y) = @_;
    my(@x,@y);
-   (@x)=split('\.',$x);
-   (@y)=split('\.',$y);
+   $x =~ /^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)(?:\/([0-9]+))?$/;
+   @x = ($1,$2,$3,$4,$5);
+   $y =~ /^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)(?:\/([0-9]+))?$/;
+   @y = ($1,$2,$3,$4,$5);
    return ($x[0] <=> $y[0]  ||
            $x[1] <=> $y[1]  ||
            $x[2] <=> $y[2]  ||
-           $x[3] <=> $y[3]);
+           $x[3] <=> $y[3]  ||
+           (defined $x[4]    &&  ! defined $y[4]  &&  1)  ||
+           (! defined $x[4]  &&  defined $y[4]    &&  -1)  ||
+           (defined $x[4]    &&  defined $y[4]    &&  $x[4] <=> $y[4])  ||
+           0);
 }
 
 sub sort_rev_ip {

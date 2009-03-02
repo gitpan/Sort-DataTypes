@@ -16,6 +16,25 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
+sub test {
+  ($method,@test) = @_;
+  my(@list,@args) = ();
+  my($args)       = 0;
+
+  foreach my $ele (@test) {
+     if ($args) {
+        push(@args,$ele);
+     } elsif ($ele eq "--") {
+        $args = 1;
+     } else {
+        push(@list,$ele);
+     }
+  }
+
+  sort_by_method($method,\@list,@args);
+  return @list;
+}
+
 $tests = '
 alphabetic
 foo
@@ -58,25 +77,6 @@ aaa::ccc
   aaa::ccc
 
 ';
-
-sub test {
-  ($method,@test) = @_;
-  my(@list,@args) = ();
-  my($args)       = 0;
-
-  foreach my $ele (@test) {
-     if ($args) {
-        push(@args,$ele);
-     } elsif ($ele eq "--") {
-        $args = 1;
-     } else {
-        push(@list,$ele);
-     }
-  }
-
-  sort_by_method($method,\@list,@args);
-  return @list;
-}
 
 print "Sort...\n";
 test_Func(\&test,$tests,$runtests);

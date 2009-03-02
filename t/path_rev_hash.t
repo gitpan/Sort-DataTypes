@@ -16,13 +16,6 @@ if ( -f "t/test.pl" ) {
 unshift(@INC,$dir);
 use Sort::DataTypes qw(:all);
 
-$tests = '
-1 aa.a 2 a.b 3 c.d.e 4 a.b.c ~ 3 1 4 2
-
-/ 1 aa/a 2 a/b 3 c/d/e 4 a/b/c ~ 3 1 4 2
-
-';
-
 sub test {
   (@test)=@_;
   my $n    = $#test + 1;
@@ -37,6 +30,13 @@ sub test {
   }
   return @list;
 }
+
+$tests = '
+1 aa.a 2 a.b 3 c.d.e 4 a.b.c ~ 3 1 4 2
+
+/ 1 aa/a 2 a/b 3 c/d/e 4 a/b/c ~ 3 1 4 2
+
+';
 
 print "Path (hash,reverse)...\n";
 test_Func(\&test,$tests,$runtests);
