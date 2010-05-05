@@ -42,9 +42,10 @@ hash:
   sort_METHOD(\@list,[@args],\%hash);
   sort_rev_METHOD(\@list,[@args],\%hash);
 
-In this case, elements of @list are used as keys in %hash. The values
-of the hash are compared using the cmp_METHOD function to sort the
-keys in @list.
+The elements of @list are sorted. Each element in @list must be a key
+in %hash, and the value of that key must be of the appropriate
+type. The elements of @list are sorted by using the cmp_METHOD
+function to compare the values in the hash.
 
 For example, if %hash contains the key/value pairs:
 
@@ -62,7 +63,9 @@ since "ick" corresponds to a numerical value of 1, "foo" to 3, and
 
 =over 4
 
-=item sort_valid_method, cmp_valid_method
+=item B<sort_valid_method>
+
+=item B<cmp_valid_method>
 
   use Sort::DataTypes qw(:all)
 
@@ -82,7 +85,9 @@ $string in the module. For example, there is a function
 
 Note that the methods must NOT include the "sort_" or "cmp_" prefix.
 
-=item sort_by_method, cmp_by_method
+=item B<sort_by_method>
+
+=item B<cmp_by_method>
 
   use Sort::DataTypes qw(:all)
 
@@ -95,7 +100,13 @@ sort_valid_method. @args are arguments to pass to the sort.
 
 If the method is not valid, the list is left untouched.
 
-=item sort_numerical, sort_rev_numerical, cmp_numerical, cmp_rev_numerical
+=item B<sort_numerical>
+
+=item B<sort_rev_numerical>
+
+=item B<cmp_numerical>
+
+=item B<cmp_rev_numerical>
 
   use Sort::DataTypes qw(:all)
 
@@ -119,7 +130,13 @@ sort_by_method/cmp_by_method routines). Also, if the code is being
 automatically generated, numerical sorts won't have to be a special
 case.
 
-=item sort_alphabetic, sort_rev_alphabetic, cmp_alphabetic, cmp_rev_alphabetic
+=item B<sort_alphabetic>
+
+=item B<sort_rev_alphabetic>
+
+=item B<cmp_alphabetic>
+
+=item B<cmp_rev_alphabetic>
 
   use Sort::DataTypes qw(:all)
 
@@ -135,7 +152,13 @@ case.
 These do alphabetic sorts. As with numerical sorts, there is little reason
 to call these, and they are included for the sake of completeness.
 
-=item sort_length, sort_rev_length, cmp_length, cmp_rev_length
+=item B<sort_length>
+
+=item B<sort_rev_length>
+
+=item B<cmp_length>
+
+=item B<cmp_rev_length>
 
   use Sort::DataTypes qw(:all)
 
@@ -151,7 +174,13 @@ to call these, and they are included for the sake of completeness.
 These take strings and compare them by length and alphabetically if they
 are the same length.
 
-=item sort_ip, sort_rev_ip, cmp_ip, cmp_rev_ip
+=item B<sort_ip>
+
+=item B<sort_rev_ip>
+
+=item B<cmp_ip>
+
+=item B<cmp_rev_ip>
 
   use Sort::DataTypes qw(:all)
 
@@ -164,13 +193,11 @@ are the same length.
   $flag = cmp_ip($x,$y);
   $flag = cmp_rev_ip($x,$y);
 
-These sort/compare IP numbers of the form A.B.C.D.
+These sort/compare IP numbers. Each value can be a pure IP (in the form A.B.C.D)
+or a CIDR notation which includes the netmask (A.B.C.D/MASK).
 
-The list can be a list of pure IPs or the CIDR representation including
-the netmask (A.B.C.D/MASK).
-
-When sorting CIDR representations, if the IP part of two elements is
-identical, the following two rules are used:
+When comparing CIDR representations, if the IP part of two elements is identical,
+the following two rules are used:
 
   an element without a mask comes before one that has a mask
 
@@ -180,7 +207,13 @@ So the following elements are in sorted order:
 
   10.20.30.40 < 10.20.30.40/4 < 10.20.30.40/16
 
-=item sort_domain, sort_rev_domain, cmp_domain, cmp_rev_domain
+=item B<sort_domain>
+
+=item B<sort_rev_domain>
+
+=item B<cmp_domain>
+
+=item B<cmp_rev_domain>
 
   use Sort::DataTypes qw(:all)
 
@@ -193,19 +226,27 @@ So the following elements are in sorted order:
   $flag = cmp_domain($x,$y [,$sep]);
   $flag = cmp_rev_domain($x,$y [,$sep]);
 
-These sort domain names (A.B.C...) or anything else consisting of a class,
-subclass, subsubclass, etc., with the most significant class at the right.
+These sort domain names (foo.bar.com) or anything else consisting of a class,
+subclass, subsubclass, etc., with the most significant class at the right (i.e.
+subsubclass.subclass.class).
 
-Elements in the domain are separated from each other by a period (.)
-unless $sep is passed in. If $sep is passed in, it is a regular expression
-to split the elements in a domain.
+Each element in the list is split into subvalues. Subvalues in a domain are
+separated from each other by a period (.) by default, but this can be
+overridden.  If $sep is passed in, it is a regular expression to split the
+values into subvalues.
 
-Since the most significant element in the domain is at the right, any
+Since the most significant subvalue in the domain is at the right, any
 domain ending with ".com" would come before any domain ending in ".edu".
 
   a.b < z.b < a.bb < z.bb < a.c
 
-=item sort_numdomain, sort_rev_numdomain, cmp_numdomain, cmp_rev_numdomain
+=item B<sort_numdomain>
+
+=item B<sort_rev_numdomain>
+
+=item B<cmp_numdomain>
+
+=item B<cmp_rev_numdomain>
 
   use Sort::DataTypes qw(:all)
 
@@ -237,7 +278,13 @@ and second elements, but it will use alphabetic comparisons when
 comparing the first and third elements (or the second and third
 elements).
 
-=item sort_path, sort_rev_path, cmp_path, cmp_rev_path
+=item B<sort_path>
+
+=item B<sort_rev_path>
+
+=item B<cmp_path>
+
+=item B<cmp_rev_path>
 
   use Sort::DataTypes qw(:all)
 
@@ -267,7 +314,13 @@ explicit paths, the explicit paths will come first. So:
 
   /b/c < a/b
 
-=item sort_numpath, sort_rev_numpath, cmp_numpath, cmp_rev_numpath
+=item B<sort_numpath>
+
+=item B<sort_rev_numpath>
+
+=item B<cmp_numpath>
+
+=item B<cmp_rev_numpath>
 
   use Sort::DataTypes qw(:all)
 
@@ -286,7 +339,13 @@ numerical sorts will be done. So:
 
   a/2/c < a/11/c
 
-=item sort_random, sort_rev_random, cmp_random, cmp_rev_random
+=item B<sort_random>
+
+=item B<sort_rev_random>
+
+=item B<cmp_random>
+
+=item B<cmp_rev_random>
 
   use Sort::DataTypes qw(:all)
 
@@ -311,7 +370,13 @@ code that may add the 'rev_' prefix.
 
 The cmp_random simply returns a random -1, 0, or 1.
 
-=item sort_version, sort_rev_version, cmp_version, cmp_rev_version
+=item B<sort_version>
+
+=item B<sort_rev_version>
+
+=item B<cmp_version>
+
+=item B<cmp_rev_version>
 
   use Sort::DataTypes qw(:all)
 
@@ -345,7 +410,13 @@ the ordering:
                        equal in the number part and equal in the
                        remaining part are compared alphabetically.
 
-=item sort_date, sort_rev_date, cmp_date, cmp_rev_date
+=item B<sort_date>
+
+=item B<sort_rev_date>
+
+=item B<cmp_date>
+
+=item B<cmp_rev_date>
 
   use Sort::DataTypes qw(:all)
 
@@ -361,7 +432,13 @@ the ordering:
 These sorts a list of dates. Dates are anything that can be parsed
 with Date::Manip.
 
-=item sort_line, sort_rev_line, cmp_line, cmp_rev_line
+=item B<sort_line>
+
+=item B<sort_rev_line>
+
+=item B<cmp_line>
+
+=item B<cmp_rev_line>
 
   use Sort::DataTypes qw(:all)
 
@@ -379,7 +456,13 @@ regular expression splitting the lines into fields. Fields are
 numbered starting at 0.  If no $sep is given, it defaults to white
 space.
 
-=item sort_numline, sort_rev_numline, cmp_numline, cmp_rev_numline
+=item B<sort_numline>
+
+=item B<sort_rev_numline>
+
+=item B<cmp_numline>
+
+=item B<cmp_rev_numline>
 
   use Sort::DataTypes qw(:all)
 
@@ -395,7 +478,13 @@ space.
 These are similar but will sort numerically if the Nth field is an
 integer, and alphabetically otherwise.
 
-=item sort_function, sort_rev_function, cmp_function, cmp_rev_function
+=item B<sort_function>
+
+=item B<sort_rev_function>
+
+=item B<cmp_function>
+
+=item B<cmp_rev_function>
 
   use Sort::DataTypes qw(:all)
 
@@ -420,7 +509,7 @@ The following are a list of backwards incompatibilities.
 
 =over 4
 
-=item Version 2.00 handling of hashes
+=item B<Version 2.00 handling of hashes>
 
 In version 1.xx, when sorting by hash, the hash was passed in
 as the hash. As of 2.00, it is passed in by reference to avoid

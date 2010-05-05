@@ -1,20 +1,11 @@
 #!/usr/bin/perl -w
 
-require 5.001;
-
-$runtests=shift(@ARGV);
-if ( -f "t/test.pl" ) {
-  require "t/test.pl";
-  $dir="t";
-} elsif ( -f "test.pl" ) {
-  require "test.pl";
-  $dir=".";
-} else {
-  die "ERROR: cannot find test.pl\n";
+BEGIN {
+  use Test::Inter;
+  $t = new Test::Inter 'Line (hash)';
 }
 
-unshift(@INC,$dir);
-use Sort::DataTypes qw(:all);
+BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
   (@test)=@_;
@@ -33,14 +24,16 @@ sub test {
 }
 
 $tests = '
-1 : a a:3:b:c b e:2:a:f c c:1:x:d ~ a c b
+1 : a a:3:b:c b e:2:a:f c c:1:x:d => a c b
 
-3 : a a:3:b:c b e:2:a:f c c:1:x:d ~ b a c
+3 : a a:3:b:c b e:2:a:f c c:1:x:d => b a c
 
 ';
 
-print "Line (hash)...\n";
-test_Func(\&test,$tests,$runtests);
+$t->tests(func  => \&test,
+          tests => $tests);
+$t->done_testing();
+
 
 1;
 # Local Variables:

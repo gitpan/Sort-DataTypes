@@ -1,20 +1,11 @@
 #!/usr/bin/perl -w
 
-require 5.001;
-
-$runtests=shift(@ARGV);
-if ( -f "t/test.pl" ) {
-  require "t/test.pl";
-  $dir="t";
-} elsif ( -f "test.pl" ) {
-  require "test.pl";
-  $dir=".";
-} else {
-  die "ERROR: cannot find test.pl\n";
+BEGIN {
+  use Test::Inter;
+  $t = new Test::Inter 'Numerical (reverse)';
 }
 
-unshift(@INC,$dir);
-use Sort::DataTypes qw(:all);
+BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
   (@test)=@_;
@@ -23,14 +14,16 @@ sub test {
 }
 
 $tests = "
-1 3 2 ~ 3 2 1
+1 3 2 => 3 2 1
 
--2 -3 -1 ~ -1 -2 -3
+-2 -3 -1 => -1 -2 -3
 
 ";
 
-print "Numerical (reverse)...\n";
-test_Func(\&test,$tests,$runtests);
+$t->tests(func  => \&test,
+          tests => $tests);
+$t->done_testing();
+
 
 1;
 # Local Variables:

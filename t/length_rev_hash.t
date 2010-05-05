@@ -1,20 +1,11 @@
 #!/usr/bin/perl -w
 
-require 5.001;
-
-$runtests=shift(@ARGV);
-if ( -f "t/test.pl" ) {
-  require "t/test.pl";
-  $dir="t";
-} elsif ( -f "test.pl" ) {
-  require "test.pl";
-  $dir=".";
-} else {
-  die "ERROR: cannot find test.pl\n";
+BEGIN {
+  use Test::Inter;
+  $t = new Test::Inter 'Length (hash,reverse)';
 }
 
-unshift(@INC,$dir);
-use Sort::DataTypes qw(:all);
+BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
   (@test)=@_;
@@ -25,14 +16,16 @@ sub test {
 }
 
 $tests = "
-1 foo 2 bar 3 zed ~ 3 1 2
+1 foo 2 bar 3 zed => 3 1 2
 
-1 foo 2 a 3 mi 4 m 5 mo 6 zed ~ 6 1 5 3 4 2
+1 foo 2 a 3 mi 4 m 5 mo 6 zed => 6 1 5 3 4 2
 
 ";
 
-print "Length (hash,reverse)...\n";
-test_Func(\&test,$tests,$runtests);
+$t->tests(func  => \&test,
+          tests => $tests);
+$t->done_testing();
+
 
 1;
 # Local Variables:

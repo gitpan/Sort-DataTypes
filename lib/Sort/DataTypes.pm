@@ -1,17 +1,15 @@
 package Sort::DataTypes;
-# Copyright (c) 2007-2009 Sullivan Beck. All rights reserved.
+# Copyright (c) 2007-2010 Sullivan Beck. All rights reserved.
 # This program is free software; you can redistribute it and/or modify it
 # under the same terms as Perl itself.
 
 ###############################################################################
 
-$VERSION = "2.04";
+$VERSION = "2.05";
 
 require 5.000;
 require Exporter;
 use warnings;
-use Date::Manip;
-Date_Init();
 
 @ISA = qw(Exporter);
 @EXPORT_OK =
@@ -59,6 +57,9 @@ Date_Init();
    );
 use vars qw(%methods);
 %methods = map { $_,1 } @methods;
+
+use vars qw($date_init);
+$date_init = 0;
 
 use strict;
 ###############################################################################
@@ -628,13 +629,18 @@ sub cmp_rev_version {
 
 sub sort_date {
    my($list,$hash) = @_;
+   if (! $date_init) {
+      require Date::Manip;
+      Date::Manip::Date_Init();
+      $date_init = 1;
+   }
    if (defined $hash) {
       foreach my $key (@$list) {
-         $$hash{$key} = ParseDate($$hash{$key});
+         $$hash{$key} = Date::Manip::ParseDate($$hash{$key});
       }
    } else {
       foreach my $key (@$list) {
-         $$hash{$key} = ParseDate($key);
+         $$hash{$key} = Date::Manip::ParseDate($key);
       }
    }
 
@@ -645,7 +651,12 @@ sub sort_date {
 
 sub cmp_date {
    my($x,$y) = @_;
-   return Date_Cmp($x,$y);
+   if (! $date_init) {
+      require Date::Manip;
+      Date::Manip::Date_Init();
+      $date_init = 1;
+   }
+   return Date::Manip::Date_Cmp($x,$y);
 }
 
 sub sort_rev_date {

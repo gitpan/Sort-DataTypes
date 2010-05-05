@@ -1,20 +1,11 @@
 #!/usr/bin/perl -w
 
-require 5.001;
-
-$runtests=shift(@ARGV);
-if ( -f "t/test.pl" ) {
-  require "t/test.pl";
-  $dir="t";
-} elsif ( -f "test.pl" ) {
-  require "test.pl";
-  $dir=".";
-} else {
-  die "ERROR: cannot find test.pl\n";
+BEGIN {
+  use Test::Inter;
+  $t = new Test::Inter 'Function';
 }
 
-unshift(@INC,$dir);
-use Sort::DataTypes qw(:all);
+BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 # Do an alphabetic sort except put m-z before a-l)
 sub testcmp {
@@ -39,7 +30,7 @@ abc
 bcd
 mno
 nop
-~
+=>
   mno
   nop
   abc
@@ -47,8 +38,9 @@ nop
 
 ";
 
-print "Function...\n";
-test_Func(\&test,$tests,$runtests);
+$t->tests(func  => \&test,
+          tests => $tests);
+$t->done_testing();
 
 1;
 # Local Variables:

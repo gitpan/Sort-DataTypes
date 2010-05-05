@@ -34,7 +34,11 @@ Version 2.03  2008-05-09
 
 Version 2.04  2009-03-02
    Minor POD fix
-   Added CIDR support to IP routines.  Mason Brown <tmb@nanite.net>
+   Added CIDR support to IP routines.  Mason Brown
 
-Version 2.05
+Version 2.05  2010-05-05
+   Converted test suite to Test::Inter
+   Only load Date::Manip if needed (speeds up loading).
+   Set TZ in tests so tests won't fail.
 
+Version 2.06

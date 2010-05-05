@@ -1,20 +1,11 @@
 #!/usr/bin/perl -w
 
-require 5.001;
-
-$runtests=shift(@ARGV);
-if ( -f "t/test.pl" ) {
-  require "t/test.pl";
-  $dir="t";
-} elsif ( -f "test.pl" ) {
-  require "test.pl";
-  $dir=".";
-} else {
-  die "ERROR: cannot find test.pl\n";
+BEGIN {
+  use Test::Inter;
+  $t = new Test::Inter 'IP';
 }
 
-unshift(@INC,$dir);
-use Sort::DataTypes qw(:all);
+BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
   (@test)=@_;
@@ -27,7 +18,7 @@ $tests = "
 10.227.208.42
 128.227.208.75
 10.227.208.3
-~
+=>
   10.227.208.3
   10.227.208.42
   128.227.208.63
@@ -38,7 +29,7 @@ $tests = "
 10.20.30.41
 10.20.30.42
 10.20.30.41/16
-~
+=>
   10.20.30.40
   10.20.30.41
   10.20.30.41/4
@@ -46,8 +37,10 @@ $tests = "
   10.20.30.42
 ";
 
-print "IP...\n";
-test_Func(\&test,$tests,$runtests);
+$t->tests(func  => \&test,
+          tests => $tests);
+$t->done_testing();
+
 
 1;
 # Local Variables:

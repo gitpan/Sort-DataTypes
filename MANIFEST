@@ -1,6 +1,7 @@
 Build.PL
-examples/README.examples
+examples/passwd
 HISTORY
+INSTALL
 lib/Sort/DataTypes.pm
 lib/Sort/DataTypes.pod
 LICENSE
@@ -55,8 +56,8 @@ t/path_rev_hash.t
 t/pod.t
 t/pod_coverage.t
 t/runtests
+t/runtests.bat
 t/sort.t
-t/test.pl
 t/valid_method.t
 t/version.t
 t/version_hash.t

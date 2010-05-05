@@ -1,22 +1,23 @@
 ---
-name: Sort-DataTypes
-version: 2.04
+abstract: 'Sort a list of data using methods relevant to the type of data'
 author:
   - 'Sullivan Beck <sbeck@cpan.org>'
-abstract: Sort a list of data using methods relevant to the type of data
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3603'
 license: perl
-resources:
-  license: http://dev.perl.org/licenses/
-requires:
-  Date::Manip: 0
-  perl: 5.6.0
-build_requires:
-  Test::More: 0
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Sort-DataTypes
 provides:
   Sort::DataTypes:
     file: lib/Sort/DataTypes.pm
-    version: 2.04
-generated_by: Module::Build version 0.280801
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+    version: 2.05
+requires:
+  Date::Manip: 0
+  Exporter: 0
+  perl: 5.000
+resources:
+  license: http://dev.perl.org/licenses/
+version: 2.05

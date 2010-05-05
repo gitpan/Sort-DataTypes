@@ -1,20 +1,11 @@
 #!/usr/bin/perl -w
 
-require 5.001;
-
-$runtests=shift(@ARGV);
-if ( -f "t/test.pl" ) {
-  require "t/test.pl";
-  $dir="t";
-} elsif ( -f "test.pl" ) {
-  require "test.pl";
-  $dir=".";
-} else {
-  die "ERROR: cannot find test.pl\n";
+BEGIN {
+  use Test::Inter;
+  $t = new Test::Inter 'Path (reverse)';
 }
 
-unshift(@INC,$dir);
-use Sort::DataTypes qw(:all);
+BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
   (@test)=@_;
@@ -24,14 +15,16 @@ sub test {
 }
 
 $tests = '
-aa.a a.b c.d.e a.b.c \. ~ c.d.e aa.a a.b.c a.b
+aa.a a.b c.d.e a.b.c \. => c.d.e aa.a a.b.c a.b
 
-aa/a a/b c/d/e a/b/c / ~ c/d/e aa/a a/b/c a/b
+aa/a a/b c/d/e a/b/c / => c/d/e aa/a a/b/c a/b
 
 ';
 
-print "Path (reverse)...\n";
-test_Func(\&test,$tests,$runtests);
+$t->tests(func  => \&test,
+          tests => $tests);
+$t->done_testing();
+
 
 1;
 # Local Variables:

@@ -1,20 +1,14 @@
 #!/usr/bin/perl -w
 
-require 5.001;
-
-$runtests=shift(@ARGV);
-if ( -f "t/test.pl" ) {
-  require "t/test.pl";
-  $dir="t";
-} elsif ( -f "test.pl" ) {
-  require "test.pl";
-  $dir=".";
-} else {
-  die "ERROR: cannot find test.pl\n";
+BEGIN {
+  use Test::Inter;
+  $t = new Test::Inter 'Date (reverse)';
 }
 
-unshift(@INC,$dir);
-use Sort::DataTypes qw(:all);
+BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
+
+BEGIN { $t->use_ok('Date::Manip'); }
+Date_Init("TZ=EST");
 
 sub test {
   (@test)=@_;
@@ -23,20 +17,22 @@ sub test {
 }
 
 $tests = "
-Jul 4 2000
-May 31 2000
-Dec 31 1999
-Jan 3 2001
-~
-  Jan 3 2001
-  Jul 4 2000
-  May 31 2000
-  Dec 31 1999
+'Jul 4 2000'
+'May 31 2000'
+'Dec 31 1999'
+'Jan 3 2001'
+=>
+  'Jan 3 2001'
+  'Jul 4 2000'
+  'May 31 2000'
+  'Dec 31 1999'
 
 ";
 
-print "Date (reverse)...\n";
-test_Func(\&test,$tests,$runtests);
+$t->tests(func  => \&test,
+          tests => $tests);
+$t->done_testing();
+
 
 1;
 # Local Variables:

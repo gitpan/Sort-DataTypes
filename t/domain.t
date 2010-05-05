@@ -1,20 +1,11 @@
 #!/usr/bin/perl -w
 
-require 5.001;
-
-$runtests=shift(@ARGV);
-if ( -f "t/test.pl" ) {
-  require "t/test.pl";
-  $dir="t";
-} elsif ( -f "test.pl" ) {
-  require "test.pl";
-  $dir=".";
-} else {
-  die "ERROR: cannot find test.pl\n";
+BEGIN {
+  use Test::Inter;
+  $t = new Test::Inter 'Domain';
 }
 
-unshift(@INC,$dir);
-use Sort::DataTypes qw(:all);
+BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
   (@test)=@_;
@@ -32,7 +23,7 @@ $tests = '
 aaa.bbb
 aa.bbb
 \.
-~
+=>
   aa.bbb
   aaa.bbb
 
@@ -40,7 +31,7 @@ aaa.bbb.ccc
 bbb.ccc
 aaa.ccc
 \.
-~
+=>
   aaa.ccc
   bbb.ccc
   aaa.bbb.ccc
@@ -48,14 +39,14 @@ aaa.ccc
 aaa.bbb
 aaa.ccc
 SEP
-~
+=>
   aaa.bbb
   aaa.ccc
 
 aaa::bbb
 aa::bbb
 ::
-~
+=>
   aa::bbb
   aaa::bbb
 
@@ -63,7 +54,7 @@ aaa::bbb::ccc
 bbb::ccc
 aaa::ccc
 ::
-~
+=>
   aaa::ccc
   bbb::ccc
   aaa::bbb::ccc
@@ -71,14 +62,16 @@ aaa::ccc
 aaa::bbb
 aaa::ccc
 ::
-~
+=>
   aaa::bbb
   aaa::ccc
 
 ';
 
-print "Domain...\n";
-test_Func(\&test,$tests,$runtests);
+$t->tests(func  => \&test,
+          tests => $tests);
+$t->done_testing();
+
 
 1;
 # Local Variables:
