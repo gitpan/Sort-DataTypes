@@ -41,4 +41,7 @@ Version 2.05  2010-05-05
    Only load Date::Manip if needed (speeds up loading).
    Set TZ in tests so tests won't fail.
 
-Version 2.06
+Version 2.06  2010-06-08
+   Changed Build.PL/Makefile.PL so tests won't fail.
+
+Version 2.07

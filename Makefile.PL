@@ -14,7 +14,7 @@ my %requires = (
 
 WriteMakefile(
         NAME             => 'Sort::DataTypes',
-        VERSION          => '2.05',
+        VERSION          => '2.06',
         ($] >= 5.000
         ? (ABSTRACT=>'Sort a list of data using methods relevant to the type of data',
            AUTHOR  =>'Sullivan Beck (sbeck@cpan.org)')

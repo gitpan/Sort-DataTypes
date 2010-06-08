@@ -5,7 +5,7 @@ package Sort::DataTypes;
 
 ###############################################################################
 
-$VERSION = "2.05";
+$VERSION = "2.06";
 
 require 5.000;
 require Exporter;
