@@ -2,30 +2,47 @@
 
 BEGIN {
   use Test::Inter;
-  $t = new Test::Inter 'Numerical Reverse';
+  $t = new Test::Inter 'Partial';
 }
 
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
   ($list,@args)=@_;
-  sort_rev_numerical($list,@args);
+  sort_partial($list,@args);
   return @$list;
 }
 
 $tests = "
-[ 1 3 2 ]          => 3 2 1
 
-[ -2 -3 -1 ]       => -1 -2 -3
-
-[ a c b ]          { a 3 b 5 c 1 } => b a c
+[ '3 Smith John'
+  '20 Smith Evan'
+  '100 Smith Jim'
+  '20 Tyson Lynn'
+  '3 Able Seth'
+  '20 Smith Abram'
+  '100 Smith Jack'
+  '3 Smith Amy'
+  '100 Dyson Nick' ]
+[ 1 [ numerical ] ]
+[ 2 ]
+[ 3 ]
+   =>
+   '3 Able Seth'
+   '3 Smith Amy'
+   '3 Smith John'
+   '20 Smith Abram'
+   '20 Smith Evan'
+   '20 Tyson Lynn'
+   '100 Dyson Nick' 
+   '100 Smith Jack'
+   '100 Smith Jim'
 
 ";
 
 $t->tests(func  => \&test,
           tests => $tests);
 $t->done_testing();
-
 
 1;
 # Local Variables:

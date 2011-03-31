@@ -8,21 +8,21 @@ BEGIN {
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  sort_version(\@test);
-  return @test;
+  ($list,@args)=@_;
+  sort_version($list,@args);
+  return @$list;
 }
 
 $tests = "
-1.1.x 1.2 1.2.x => 1.1.x 1.2 1.2.x
+[ 1.1.x 1.2 1.2.x ] => 1.1.x 1.2 1.2.x
 
-1.aaa 1.bbb => 1.aaa 1.bbb
+[ 1.aaa 1.bbb ]     => 1.aaa 1.bbb
 
-1.2a 1.2 1.03 => 1.2a 1.2 1.03
+[ 1.2a 1.2 1.03 ]   => 1.2a 1.2 1.03
 
-1.a 1.2a => 1.a 1.2a
+[ 1.a 1.2a ]        => 1.a 1.2a
 
-1.01a 1.1a => 1.01a 1.1a
+[ 1.01a 1.1a ]      => 1.01a 1.1a
 
 ";
 

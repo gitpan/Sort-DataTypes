@@ -8,14 +8,14 @@ BEGIN {
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  sort_alphabetic(\@test);
-  return @test;
+  ($list,@args)=@_;
+  sort_alphabetic($list,@args);
+  return @$list;
 }
 
 $tests = "
 
-foo bar zed => bar foo zed
+[ foo bar zed ] => bar foo zed
 
 ";
 

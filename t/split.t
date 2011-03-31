@@ -2,39 +2,22 @@
 
 BEGIN {
   use Test::Inter;
-  $t = new Test::Inter 'Function';
+  $t = new Test::Inter 'Split';
 }
 
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
-# Do an alphabetic sort except put m-z before a-l)
-sub testcmp {
-  my($x,$y) = @_;
-  if ($x lt "m"  &&  $y ge "m") {
-     return 1
-  } elsif ($x ge "m"  &&  $y lt "m") {
-     return -1;
-  } else {
-     return $x cmp $y;
-  }
-}
-
 sub test {
-  (@test)=@_;
-  sort_function(\@test,\&testcmp);
-  return @test;
+  ($list,@args)=@_;
+  sort_split($list,@args);
+  return @$list;
 }
 
 $tests = "
-abc
-bcd
-mno
-nop
-=>
-  mno
-  nop
-  abc
-  bcd
+
+[ 'a c d' 'a b c' 'a b' 'a a x' ]     => 'a a x' 'a b' 'a b c' 'a c d'
+
+[ a:c:d a:b:c a:b a::x a:a:x ] :      => a::x a:a:x a:b a:b:c a:c:d
 
 ";
 

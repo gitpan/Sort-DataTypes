@@ -11,16 +11,16 @@ BEGIN { $t->use_ok('Date::Manip'); }
 Date_Init("TZ=EST");
 
 sub test {
-  (@test)=@_;
-  sort_date(\@test);
-  return @test;
+  ($list,@args)=@_;
+  sort_date($list,@args);
+  return @$list;
 }
 
 $tests = "
-'Jul 4 2000'
+[ 'Jul 4 2000'
 'May 31 2000'
 'Dec 31 1999'
-'Jan 3 2001'
+'Jan 3 2001' ]
 =>
   'Dec 31 1999'
   'May 31 2000'

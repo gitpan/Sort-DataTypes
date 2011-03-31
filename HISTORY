@@ -44,4 +44,11 @@ Version 2.05  2010-05-05
 Version 2.06  2010-06-08
    Changed Build.PL/Makefile.PL so tests won't fail.
 
-Version 2.07
+Version 3.00  2011-03-31
+   Added alphanum sorts.
+   Added nosort sort method.
+   Complete reorganization/rewrite of code
+   Handle alternate backup methods
+   Added split and partial methods
+
+Version 3.01

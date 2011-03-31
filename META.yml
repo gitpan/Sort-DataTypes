@@ -4,8 +4,6 @@ author:
   - 'Sullivan Beck <sbeck@cpan.org>'
 build_requires:
   Test::Inter: 0
-  Test::Pod: 0
-  Test::Pod::Coverage: 0
 configure_requires:
   Module::Build: 0.36
 generated_by: 'Module::Build version 0.3603'
@@ -17,11 +15,11 @@ name: Sort-DataTypes
 provides:
   Sort::DataTypes:
     file: lib/Sort/DataTypes.pm
-    version: 2.06
+    version: 3.00
 requires:
-  Date::Manip: 0
   Exporter: 0
+  Storable: 0
   perl: 5.000
 resources:
   license: http://dev.perl.org/licenses/
-version: 2.06
+version: 3.00

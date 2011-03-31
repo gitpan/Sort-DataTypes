@@ -8,22 +8,13 @@ BEGIN {
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  if ($test[$#test] eq "SEP") {
-    pop(@test);
-    sort_numpath(\@test);
-  } else {
-    $sep = pop(@test);
-    sort_numpath(\@test,$sep);
-  }
-  return @test;
+  ($list,@args)=@_;
+  sort_numpath($list,@args);
+  return @$list;
 }
 
 $tests = '
-a.11.c
-a.2.c
-\.
-=>
+[ a.11.c a.2.c ] \. =>
   a.2.c
   a.11.c
 

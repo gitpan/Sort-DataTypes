@@ -2,30 +2,28 @@
 
 BEGIN {
   use Test::Inter;
-  $t = new Test::Inter 'Length (reverse)';
+  $t = new Test::Inter 'Alphanum';
 }
 
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  sort_rev_length(\@test);
-  return @test;
+  ($list,@args)=@_;
+  sort_alphanum($list,@args);
+  return @$list;
 }
 
 $tests = "
-foo bar zed => zed foo bar
 
-foo a mi m mo zed => zed foo mo mi m a
+[ a ab 1 4 2 cb ca ] => 1 2 4 a ab ca cb
 
-aaa ccc bbb => ccc bbb aaa
+[ c a 1.1 0.9 -1.1 ] => -1.1 0.9 1.1 a c
 
 ";
 
 $t->tests(func  => \&test,
           tests => $tests);
 $t->done_testing();
-
 
 1;
 # Local Variables:

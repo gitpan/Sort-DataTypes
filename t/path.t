@@ -8,56 +8,39 @@ BEGIN {
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  $sep = pop(@test);
-  sort_path(\@test,$sep);
-  return @test;
+  ($list,@args)=@_;
+  sort_path($list,@args);
+  return @$list;
 }
 
 $tests = '
-aa.a
-a.b
-c.d.e
-a.b.c
-\.
-   =>
+[ aa.a a.b c.d.e a.b.c ] \. =>
    a.b
    a.b.c
    aa.a
    c.d.e
 
-aa/a
-a/b
-c/d/e
-a/b/c
-\/
-   =>
+[ aa/a a/b c/d/e a/b/c ] =>
    a/b
    a/b/c
    aa/a
    c/d/e
 
-/aa/a
-/a/b
-/c/d/e
-/a/b/c
-\/
-   =>
+[ /aa/a /a/b /c/d/e /a/b/c ] =>
    /a/b
    /a/b/c
    /aa/a
    /c/d/e
 
-aa/a
-/a/b
-/c/d/e
-a/b/c
-\/
-   =>
+[ aa/a /a/b /c/d/e a/b/c ] =>
    /a/b
    /c/d/e
    a/b/c
    aa/a
+
+[ a/b /a/b ] =>
+   /a/b
+   a/b
 
 ';
 

@@ -2,51 +2,26 @@
 
 BEGIN {
   use Test::Inter;
-  $t = new Test::Inter 'Line (hash,reverse)';
+  $t = new Test::Inter 'Nosort';
 }
 
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  $sep   = pop(@test);
-  $n     = pop(@test);
-
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_rev_line(\@tmp,$n,$sep,\%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  ($list,@args)=@_;
+  sort_nosort($list,@args);
+  return @$list;
 }
 
-$tests = '
-a:3:b:c
-e:2:a:f
-c:1:x:d
-1
-:
-   =>
-   e:2:a:f
-   c:1:x:d
-   a:3:b:c
+$tests = "
 
-a:3:b:c
-e:2:a:f
-c:1:x:d
-3
-:
-   =>
-   c:1:x:d
-   a:3:b:c
-   e:2:a:f
+[ foo bar zed ] => foo bar zed
 
-';
+";
 
 $t->tests(func  => \&test,
           tests => $tests);
 $t->done_testing();
-
 
 1;
 # Local Variables:

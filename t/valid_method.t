@@ -16,6 +16,9 @@ $tests = '
 numerical => 1
 
 foobar => 0
+
+rev_numerical => 1
+
 ';
 
 $t->tests(func  => \&test,

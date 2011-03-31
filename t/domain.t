@@ -8,61 +8,35 @@ BEGIN {
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  if ($test[$#test] eq "SEP") {
-    pop(@test);
-    sort_domain(\@test);
-  } else {
-    $sep = pop(@test);
-    sort_domain(\@test,$sep);
-  }
-  return @test;
+  ($list,@args)=@_;
+  sort_domain($list,@args);
+  return @$list;
 }
 
 $tests = '
-aaa.bbb
-aa.bbb
-\.
-=>
+[ aaa.bbb aa.bbb ] \.  =>
   aa.bbb
   aaa.bbb
 
-aaa.bbb.ccc
-bbb.ccc
-aaa.ccc
-\.
-=>
+[ aaa.bbb.ccc bbb.ccc aaa.ccc ] \.  =>
   aaa.ccc
   bbb.ccc
   aaa.bbb.ccc
 
-aaa.bbb
-aaa.ccc
-SEP
-=>
+[ aaa.bbb aaa.ccc ] =>
   aaa.bbb
   aaa.ccc
 
-aaa::bbb
-aa::bbb
-::
-=>
+[ aaa::bbb aa::bbb ] :: =>
   aa::bbb
   aaa::bbb
 
-aaa::bbb::ccc
-bbb::ccc
-aaa::ccc
-::
-=>
+[ aaa::bbb::ccc bbb::ccc aaa::ccc ] :: =>
   aaa::ccc
   bbb::ccc
   aaa::bbb::ccc
 
-aaa::bbb
-aaa::ccc
-::
-=>
+[ aaa::bbb aaa::ccc ] :: =>
   aaa::bbb
   aaa::ccc
 

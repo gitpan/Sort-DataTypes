@@ -2,46 +2,24 @@
 
 BEGIN {
   use Test::Inter;
-  $t = new Test::Inter 'NumLine (hash)';
+  $t = new Test::Inter 'Numerical Compare';
 }
 
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  $sep   = pop(@test);
-  $n     = pop(@test);
-
-  $i=1;
-  %hash=map { $i++ => $_ } @test;
-  @tmp=(1..$i-1);
-  sort_line(\@tmp,$n,$sep,\%hash);
-  @test=map { $hash{$_} } @tmp;
-  return @test;
+  ($x,$y,@args)=@_;
+  return cmp_numerical($x,$y,@args);
 }
 
-$tests = '
-a:3:b:c
-e:2:a:f
-c:1:x:d
-1
-:
-   =>
-   a:3:b:c
-   c:1:x:d
-   e:2:a:f
+$tests = "
+1 3            => -1
 
-a:3:b:c
-e:2:a:f
-c:1:x:d
-2
-:
-   =>
-   c:1:x:d
-   e:2:a:f
-   a:3:b:c
+2 2            => 0
 
-';
+3 1            => 1
+
+";
 
 $t->tests(func  => \&test,
           tests => $tests);

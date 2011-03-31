@@ -8,29 +8,19 @@ BEGIN {
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)= @_;
-  $sep   = pop(@test);
-  $n     = pop(@test);
-  sort_numline(\@test,$n,$sep);
-  return @test;
+  ($list,@args)=@_;
+  sort_numline($list,@args);
+  return @$list;
 }
 
 $tests = '
-a:3:b:c
-e:2:a:f
-c:1:x:d
-1
-:
+[ a:3:b:c e:2:a:f c:1:x:d ] 1 :
    =>
    a:3:b:c
    c:1:x:d
    e:2:a:f
 
-a:3:b:c
-e:2:a:f
-c:1:x:d
-2
-:
+[ a:3:b:c e:2:a:f c:1:x:d ] 2 :
    =>
    c:1:x:d
    e:2:a:f

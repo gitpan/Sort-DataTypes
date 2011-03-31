@@ -8,17 +8,19 @@ BEGIN {
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  sort_length(\@test);
-  return @test;
+  ($list,@args)=@_;
+  sort_length($list,@args);
+  return @$list;
 }
 
 $tests = "
-foo bar zed => bar foo zed
+[ foo bar zed ]                           => bar foo zed
 
-foo a mi m mo zed => a m mi mo foo zed
+[ foo bar zed ] [ rev_alphabetic ]        => zed foo bar
 
-aaa ccc bbb => aaa bbb ccc
+[ foo a mi m mo zed ]                     => a m mi mo foo zed
+
+[ foo a mi m mo zed ] [ rev_alphabetic ]  => m a mo mi zed foo
 
 ";
 

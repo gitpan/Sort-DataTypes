@@ -11,61 +11,28 @@ BEGIN { $t->use_ok('Date::Manip'); }
 Date_Init("TZ=EST");
 
 sub test {
-  ($method,@test) = @_;
-  my(@list,@args) = ();
-  my($args)       = 0;
-
-  foreach my $ele (@test) {
-     if ($args) {
-        push(@args,$ele);
-     } elsif ($ele eq "--") {
-        $args = 1;
-     } else {
-        push(@list,$ele);
-     }
-  }
-
-  sort_by_method($method,\@list,@args);
-  return @list;
+  ($method,$list,@args)=@_;
+  sort_by_method($method,$list,@args);
+  return @$list;
 }
 
 $tests = '
-alphabetic
-foo
-bar
-zed
-   =>
+alphabetic [ foo bar zed ] =>
    bar
    foo
    zed
 
-rev_date
-"Jul 4 2000"
-"May 31 2000"
-"Dec 31 1999"
-"Jan 3 2001"
-=>
+rev_date [ "Jul 4 2000" "May 31 2000" "Dec 31 1999" "Jan 3 2001" ] =>
   "Jan 3 2001"
   "Jul 4 2000"
   "May 31 2000"
   "Dec 31 1999"
 
-domain
-aaa.bbb
-aa.bbb
---
-\.
-=>
+domain [ aaa.bbb aa.bbb ] \.  =>
   aa.bbb
   aaa.bbb
 
-rev_domain
-aaa::bbb::ccc
-bbb::ccc
-aaa::ccc
---
-::
-=>
+rev_domain [ aaa::bbb::ccc bbb::ccc aaa::ccc ] :: =>
   aaa::bbb::ccc
   bbb::ccc
   aaa::ccc

@@ -8,15 +8,17 @@ BEGIN {
 BEGIN { $t->use_ok('Sort::DataTypes',':all'); }
 
 sub test {
-  (@test)=@_;
-  sort_numerical(\@test);
-  return @test;
+  ($list,@args)=@_;
+  sort_numerical($list,@args);
+  return @$list;
 }
 
 $tests = "
-1 3 2 => 1 2 3
+[ 1 3 2 ]                  => 1 2 3
 
--2 -3 -1 => -3 -2 -1
+[ -2 -3 -1 ]               => -3 -2 -1
+
+[ a c b ]  { a 3 b 5 c 1 } => c a b
 
 ";
 
