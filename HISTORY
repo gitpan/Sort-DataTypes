@@ -51,4 +51,7 @@ Version 3.00  2011-03-31
    Handle alternate backup methods
    Added split and partial methods
 
-Version 3.01
+Version 3.01  2011-04-01
+   Fixed Makefile.PL/BUild.PL so they will build correctly.
+
+Version 3.02

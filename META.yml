@@ -15,11 +15,12 @@ name: Sort-DataTypes
 provides:
   Sort::DataTypes:
     file: lib/Sort/DataTypes.pm
-    version: 3.00
+    version: 3.01
 requires:
+  Date::Manip: 0
   Exporter: 0
   Storable: 0
   perl: 5.000
 resources:
   license: http://dev.perl.org/licenses/
-version: 3.00
+version: 3.01
